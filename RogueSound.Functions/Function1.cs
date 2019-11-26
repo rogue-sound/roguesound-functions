@@ -138,11 +138,19 @@ namespace RogueSound.Functions
         {
             var queryUri = UriFactory.CreateDocumentCollectionUri("RogueSound", "Songs");
             var feedOptions = new FeedOptions { PartitionKey = new PartitionKey(0) };
+            var partitionOptions = new RequestOptions { PartitionKey = new PartitionKey(0) };
 
-            var songList = client.CreateDocumentQuery(queryUri, feedOptions).ToList();
-            foreach (var song in songList)
+            try
             {
-                await client.DeleteDocumentAsync(song.SelfLink);
+                var songList = client.CreateDocumentQuery(queryUri, feedOptions).ToList();
+                foreach (var song in songList)
+                {
+                    await client.DeleteDocumentAsync(song.SelfLink, partitionOptions);
+                }
+            }
+            catch (Exception e)
+            {
+                log.LogError($"Error deleting document {e.Message}");
             }
 
             return new OkResult();
