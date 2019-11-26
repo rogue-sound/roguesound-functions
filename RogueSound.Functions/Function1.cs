@@ -75,7 +75,7 @@ namespace RogueSound.Functions
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             var data = JsonConvert.DeserializeObject<SongRequestModel>(requestBody);
 
-            var songList = client.CreateDocumentQuery<SongQueueModel>(queryUri, feedOptions).OrderBy(x => x.StartTime).ToList();
+            var songList = client.CreateDocumentQuery<SongQueueModel>(queryUri, feedOptions).OrderByDescending(x => x.StartTime).ToList();
 
             // Yay pole!
             if (!songList.Any())
