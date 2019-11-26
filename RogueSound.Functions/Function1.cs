@@ -51,7 +51,7 @@ namespace RogueSound.Functions
             ILogger log)
         {
             var queryUri = UriFactory.CreateDocumentCollectionUri("RogueSound", "Songs");
-            var feedOptions = new FeedOptions { PartitionKey =  new PartitionKey(0) };
+            var feedOptions = new FeedOptions { PartitionKey = new PartitionKey(0) };
 
             var songList = client.CreateDocumentQuery<SongQueueModel>(queryUri, feedOptions).ToList();
 
@@ -69,17 +69,21 @@ namespace RogueSound.Functions
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
 
-            string name = req.Query["name"];
+            var queryUri = UriFactory.CreateDocumentCollectionUri("RogueSound", "Songs");
+            var feedOptions = new FeedOptions { EnableCrossPartitionQuery = true };
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject<SongRequestModel>(requestBody);
-            name = name ?? data?.name;
+            var data = JsonConvert.DeserializeObject<SongRequestModel>(requestBody);
 
+            var songList = client.CreateDocumentQuery<SongQueueModel>(queryUri, feedOptions).OrderBy(x => x.ResquestTime);
 
+            // Yay pole!
+            if (!songList.Any()) return new OkObjectResult(new SongCurrentModel { SongId = data.SongId, TimerPosition = 0 });
 
-            return name != null
-                ? (ActionResult)new OkObjectResult($"Hello, {name}")
-                : new BadRequestObjectResult("Please pass a name on the query string or in the request body");
+            // GetCurrentList
+
+            //if empty add 
+
         }
     }
 }
