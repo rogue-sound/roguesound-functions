@@ -13,6 +13,7 @@ using System.Linq;
 using Microsoft.Azure.Documents.Linq;
 using System.Net.Http;
 using Microsoft.Azure.Documents;
+using System.Collections.Generic;
 
 namespace RogueSound.Functions
 {
@@ -66,7 +67,7 @@ namespace RogueSound.Functions
                 TimerPosition = DateTime.UtcNow.Subtract(currentSong.StartTime).TotalMilliseconds
             };
 
-            if (returnedSong.Duration < returnedSong.TimerPosition) return new OkObjectResult(null);
+            if (returnedSong.Duration < returnedSong.TimerPosition) return new NotFoundResult();
 
             return new OkObjectResult(returnedSong);
         }
@@ -126,9 +127,28 @@ namespace RogueSound.Functions
                     TimerPosition = DateTime.UtcNow.Subtract(currentSong.StartTime).TotalMilliseconds
                 };
 
-                if (returnedSong.Duration < returnedSong.TimerPosition) return new OkObjectResult(null);
+                if (returnedSong.Duration < returnedSong.TimerPosition) return new NotFoundResult();
                 return new OkObjectResult(returnedSong);
+
+
             }
+        }
+
+        [FunctionName("ClearQueue")]
+        public static async Task<IActionResult> ClearQueue(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
+            ILogger log)
+        {
+            var queryUri = UriFactory.CreateDocumentCollectionUri("RogueSound", "Songs");
+            var feedOptions = new FeedOptions { PartitionKey = new PartitionKey(0) };
+
+            var songList = client.CreateDocumentQuery(queryUri, feedOptions).ToList();
+            foreach (var song in songList)
+            {
+                await client.DeleteDocumentAsync(song.SelfLink);
+            }
+
+            return new OkResult();
         }
     }
 }
