@@ -69,8 +69,10 @@ namespace RogueSound.Functions
             string name = req.Query["name"];
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
+            dynamic data = JsonConvert.DeserializeObject<SongRequestModel>(requestBody);
             name = name ?? data?.name;
+
+
 
             return name != null
                 ? (ActionResult)new OkObjectResult($"Hello, {name}")
