@@ -125,14 +125,20 @@ namespace RogueSound.Functions
                     SongId = data.SongId,
                     ResquestTime = DateTime.UtcNow,
                     Duration = data.Duration,
-                    StartTime = songList.FirstOrDefault().EndTime < DateTime.UtcNow ? DateTime.UtcNow : songList.FirstOrDefault().EndTime.AddSeconds(1),
+                    StartTime = songList.FirstOrDefault().EndTime.AddSeconds(1),
                     EndTime = songList.FirstOrDefault().EndTime.AddMilliseconds(data.Duration)
                 };
 
                 var partitionOptions = new RequestOptions { PartitionKey = new PartitionKey(0) };
                 await client.CreateDocumentAsync(queryUri, requestedSong, partitionOptions);
 
-                var currentSong = songList.Where(x => x.StartTime <= DateTime.UtcNow).OrderByDescending(x => x.StartTime).FirstOrDefault();
+                var currentSong = songList.Where(x => x.StartTime <= DateTime.UtcNow && x.EndTime > DateTime.UtcNow).OrderByDescending(x => x.StartTime).FirstOrDefault();
+
+                if (currentSong == null)
+                {
+                    log.LogInformation($"No active song playing. Current song is now the requested one with Id {requestedSong.SongId} and duration {requestedSong.EndTime.Subtract(requestedSong.StartTime).TotalSeconds} s");
+                    return new NotFoundResult();
+                }
 
                 var returnedSong = new SongCurrentModel
                 {
