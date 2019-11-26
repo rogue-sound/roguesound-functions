@@ -107,10 +107,17 @@ namespace RogueSound.Functions
 
                 var partitionOptions = new RequestOptions { PartitionKey = new PartitionKey(0) };
                 await client.CreateDocumentAsync(queryUri, requestedSong, partitionOptions);
-                
+
                 var currentSong = songList.Where(x => x.StartTime <= DateTime.UtcNow).OrderByDescending(x => x.StartTime).FirstOrDefault();
 
-                return new OkObjectResult(new SongCurrentModel { SongId = currentSong.SongId, TimerPosition = DateTime.UtcNow.Subtract(currentSong.StartTime).TotalMilliseconds });
+                var returnedSong = new SongCurrentModel
+                {
+                    SongId = currentSong.SongId,
+                    Duration = currentSong.Duration,
+                    TimerPosition = DateTime.UtcNow.Subtract(currentSong.StartTime).TotalMilliseconds
+                };
+
+                return new OkObjectResult(returnedSong);
             }
         }
     }
