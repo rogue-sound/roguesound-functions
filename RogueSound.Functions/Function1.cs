@@ -59,7 +59,16 @@ namespace RogueSound.Functions
 
             var currentSong = songList.Where(x => x.StartTime <= DateTime.UtcNow).OrderByDescending(x => x.StartTime).FirstOrDefault();
 
-            return new OkObjectResult(new SongCurrentModel { SongId = currentSong.SongId, TimerPosition = DateTime.UtcNow.Subtract(currentSong.StartTime).TotalMilliseconds });
+            var returnedSong = new SongCurrentModel
+            {
+                SongId = currentSong.SongId,
+                Duration = currentSong.Duration,
+                TimerPosition = DateTime.UtcNow.Subtract(currentSong.StartTime).TotalMilliseconds
+            };
+
+            if (returnedSong.Duration < returnedSong.TimerPosition) return new OkObjectResult(null);
+
+            return new OkObjectResult(returnedSong);
         }
 
         [FunctionName("AddSong")]
@@ -117,6 +126,7 @@ namespace RogueSound.Functions
                     TimerPosition = DateTime.UtcNow.Subtract(currentSong.StartTime).TotalMilliseconds
                 };
 
+                if (returnedSong.Duration < returnedSong.TimerPosition) return new OkObjectResult(null);
                 return new OkObjectResult(returnedSong);
             }
         }
