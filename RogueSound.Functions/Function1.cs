@@ -77,7 +77,7 @@ namespace RogueSound.Functions
                 TimerPosition = DateTime.UtcNow.Subtract(currentSong.StartTime).TotalMilliseconds
             };
 
-            log.LogInformation($"Current song is {returnedSong.SongId} with reamining minutes: {currentSong.EndTime.Subtract(currentSong.StartTime).TotalMinutes}");
+            log.LogInformation($"Current song is {returnedSong.SongId} with timeleft: {currentSong.EndTime.Subtract(currentSong.StartTime).TotalSeconds} s");
 
             return new OkObjectResult(returnedSong);
         }
@@ -141,7 +141,7 @@ namespace RogueSound.Functions
                     TimerPosition = DateTime.UtcNow.Subtract(currentSong.StartTime).TotalMilliseconds
                 };
 
-                log.LogInformation($"Song {requestedSong.SongId} added, current song is {returnedSong.SongId} with reamining minutes: {currentSong.EndTime.Subtract(currentSong.StartTime).TotalMinutes}");
+                log.LogInformation($"Song {requestedSong.SongId} added, current song is {returnedSong.SongId} with timeleft: {currentSong.EndTime.Subtract(currentSong.StartTime).TotalSeconds} s");
 
                 return new OkObjectResult(returnedSong);
             }
