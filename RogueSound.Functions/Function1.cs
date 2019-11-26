@@ -120,13 +120,15 @@ namespace RogueSound.Functions
             }
             else
             {
+                var requestStartTime = songList.FirstOrDefault().EndTime < DateTime.UtcNow ? DateTime.UtcNow : songList.FirstOrDefault().EndTime.AddSeconds(1);
+
                 var requestedSong = new SongQueueModel()
                 {
                     SongId = data.SongId,
                     ResquestTime = DateTime.UtcNow,
                     Duration = data.Duration,
-                    StartTime = songList.FirstOrDefault().EndTime.AddSeconds(1),
-                    EndTime = songList.FirstOrDefault().EndTime.AddMilliseconds(data.Duration)
+                    StartTime = requestStartTime,
+                    EndTime = requestStartTime.AddMilliseconds(data.Duration)
                 };
 
                 var partitionOptions = new RequestOptions { PartitionKey = new PartitionKey(0) };
