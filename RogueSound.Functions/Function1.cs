@@ -75,15 +75,29 @@ namespace RogueSound.Functions
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             var data = JsonConvert.DeserializeObject<SongRequestModel>(requestBody);
 
-            var songList = client.CreateDocumentQuery<SongQueueModel>(queryUri, feedOptions).OrderBy(x => x.ResquestTime);
+            var songList = client.CreateDocumentQuery<SongQueueModel>(queryUri, feedOptions).OrderBy(x => x.StartTime);
 
             // Yay pole!
-            if (!songList.Any()) return new OkObjectResult(new SongCurrentModel { SongId = data.SongId, TimerPosition = 0 });
+            if (!songList.Any())
+            {
+                return new OkObjectResult(new SongCurrentModel { SongId = data.SongId, TimerPosition = 0 });
+            }
+            else
+            {
+                var requestedSong = new SongQueueModel()
+                {
+                    SongId = data.SongId,
+                    ResquestTime = DateTime.UtcNow,
+                    Duration = data.Duration,
+                    StartTime = songList.FirstOrDefault().EndTime.AddSeconds(1),
+                    EndTime = songList.FirstOrDefault().EndTime.AddMilliseconds(data.Duration)
+                };
 
-            // GetCurrentList
+                var partitionOptions = new RequestOptions { PartitionKey = new PartitionKey(0) };
+                await client.CreateDocumentAsync(queryUri, requestedSong, partitionOptions);
 
-            //if empty add 
-
+                //return current song
+            }
         }
     }
 }
