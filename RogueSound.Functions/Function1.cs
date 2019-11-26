@@ -75,7 +75,7 @@ namespace RogueSound.Functions
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             var data = JsonConvert.DeserializeObject<SongRequestModel>(requestBody);
 
-            var songList = client.CreateDocumentQuery<SongQueueModel>(queryUri, feedOptions).OrderBy(x => x.StartTime);
+            var songList = client.CreateDocumentQuery<SongQueueModel>(queryUri, feedOptions).OrderBy(x => x.StartTime).ToList();
 
             // Yay pole!
             if (!songList.Any())
@@ -110,7 +110,7 @@ namespace RogueSound.Functions
                 
                 var currentSong = songList.Where(x => x.StartTime <= DateTime.UtcNow).OrderByDescending(x => x.StartTime).FirstOrDefault();
 
-                return new OkObjectResult(new SongCurrentModel { SongId = currentSong.SongId, TimerPosition = DateTime.UtcNow.Subtract(currentSong.StartTime).TotalMilliseconds);
+                return new OkObjectResult(new SongCurrentModel { SongId = currentSong.SongId, TimerPosition = DateTime.UtcNow.Subtract(currentSong.StartTime).TotalMilliseconds });
             }
         }
     }
