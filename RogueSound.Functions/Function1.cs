@@ -12,6 +12,7 @@ using Microsoft.Azure.Documents.Client;
 using System.Linq;
 using Microsoft.Azure.Documents.Linq;
 using System.Net.Http;
+using Microsoft.Azure.Documents;
 
 namespace RogueSound.Functions
 {
@@ -50,13 +51,13 @@ namespace RogueSound.Functions
             ILogger log)
         {
             var queryUri = UriFactory.CreateDocumentCollectionUri("RogueSound", "Songs");
-            var feedOptions = new FeedOptions { EnableCrossPartitionQuery = true };
+            var feedOptions = new FeedOptions { PartitionKey =  new PartitionKey(0) };
 
-            var songList = client.CreateDocumentQuery<SongRequestModel>(queryUri, feedOptions).ToList();
+            var songList = client.CreateDocumentQuery<SongQueueModel>(queryUri, feedOptions).ToList();
 
             if (!songList.Any()) return new NotFoundResult();
 
-            var currentSong = songList.Where(x => x.StartTime < DateTime.UtcNow).OrderByDescending(x => x.StartTime).FirstOrDefault();
+            var currentSong = songList.Where(x => x.StartTime <= DateTime.UtcNow).OrderByDescending(x => x.StartTime).FirstOrDefault();
 
             return new OkObjectResult(System.Net.HttpStatusCode.OK);
         }
