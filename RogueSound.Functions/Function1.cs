@@ -58,7 +58,7 @@ namespace RogueSound.Functions
 
             if (!songList.Any()) return new NotFoundResult();
 
-            var currentSong = songList.Where(x => x.StartTime <= DateTime.UtcNow).OrderByDescending(x => x.StartTime).FirstOrDefault();
+            var currentSong = songList.Where(x => x.StartTime <= DateTime.UtcNow && x.EndTime > DateTime.UtcNow).OrderByDescending(x => x.StartTime).FirstOrDefault();
 
             var returnedSong = new SongCurrentModel
             {
@@ -66,8 +66,6 @@ namespace RogueSound.Functions
                 Duration = currentSong.Duration,
                 TimerPosition = DateTime.UtcNow.Subtract(currentSong.StartTime).TotalMilliseconds
             };
-
-            if (returnedSong.Duration < returnedSong.TimerPosition) return new NotFoundResult();
 
             return new OkObjectResult(returnedSong);
         }
@@ -127,10 +125,9 @@ namespace RogueSound.Functions
                     TimerPosition = DateTime.UtcNow.Subtract(currentSong.StartTime).TotalMilliseconds
                 };
 
-                if (returnedSong.Duration < returnedSong.TimerPosition) return new NotFoundResult();
+                if (currentSong.EndTime < DateTime.UtcNow) return new NotFoundResult();
+
                 return new OkObjectResult(returnedSong);
-
-
             }
         }
 
