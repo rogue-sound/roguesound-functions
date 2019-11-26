@@ -56,9 +56,19 @@ namespace RogueSound.Functions
 
             var songList = client.CreateDocumentQuery<SongQueueModel>(queryUri, feedOptions).ToList();
 
-            if (!songList.Any()) return new NotFoundResult();
+            if (!songList.Any())
+            {
+                log.LogInformation("Queue is empty. Go for pole.");
+                return new NotFoundResult();
+            }
 
             var currentSong = songList.Where(x => x.StartTime <= DateTime.UtcNow && x.EndTime > DateTime.UtcNow).OrderByDescending(x => x.StartTime).FirstOrDefault();
+
+            if (currentSong == null)
+            {
+                log.LogInformation("No active song playing.");
+                return new NotFoundResult();
+            }
 
             var returnedSong = new SongCurrentModel
             {
@@ -66,6 +76,8 @@ namespace RogueSound.Functions
                 Duration = currentSong.Duration,
                 TimerPosition = DateTime.UtcNow.Subtract(currentSong.StartTime).TotalMilliseconds
             };
+
+            log.LogInformation($"Current song is {returnedSong.SongId} with reamining minutes: {currentSong.EndTime.Subtract(currentSong.StartTime).TotalMinutes}");
 
             return new OkObjectResult(returnedSong);
         }
@@ -83,6 +95,8 @@ namespace RogueSound.Functions
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             var data = JsonConvert.DeserializeObject<SongRequestModel>(requestBody);
 
+            log.LogInformation($"Request body {data}");
+
             var songList = client.CreateDocumentQuery<SongQueueModel>(queryUri, feedOptions).OrderByDescending(x => x.StartTime).ToList();
 
             // Yay pole!
@@ -96,6 +110,8 @@ namespace RogueSound.Functions
                     StartTime = DateTime.UtcNow.AddSeconds(1),
                     EndTime = DateTime.UtcNow.AddMilliseconds(data.Duration)
                 };
+
+                log.LogInformation("Pole! empty queue. Returning requested song as current");
 
                 var partitionOptions = new RequestOptions { PartitionKey = new PartitionKey(0) };
                 await client.CreateDocumentAsync(queryUri, requestedSong, partitionOptions);
@@ -125,7 +141,7 @@ namespace RogueSound.Functions
                     TimerPosition = DateTime.UtcNow.Subtract(currentSong.StartTime).TotalMilliseconds
                 };
 
-                if (currentSong.EndTime < DateTime.UtcNow) return new NotFoundResult();
+                log.LogInformation($"Song {requestedSong.SongId} added, current song is {returnedSong.SongId} with reamining minutes: {currentSong.EndTime.Subtract(currentSong.StartTime).TotalMinutes}");
 
                 return new OkObjectResult(returnedSong);
             }
@@ -147,6 +163,8 @@ namespace RogueSound.Functions
                 {
                     await client.DeleteDocumentAsync(song.SelfLink, partitionOptions);
                 }
+                log.LogInformation("Cleared Queue in room 0");
+
             }
             catch (Exception e)
             {
