@@ -125,7 +125,7 @@ namespace RogueSound.Functions
                     SongId = data.SongId,
                     ResquestTime = DateTime.UtcNow,
                     Duration = data.Duration,
-                    StartTime = songList.FirstOrDefault().EndTime.AddSeconds(1),
+                    StartTime = songList.FirstOrDefault().EndTime < DateTime.UtcNow ? DateTime.UtcNow : songList.FirstOrDefault().EndTime.AddSeconds(1),
                     EndTime = songList.FirstOrDefault().EndTime.AddMilliseconds(data.Duration)
                 };
 
