@@ -10,7 +10,7 @@ namespace RogueSound.Functions
 
         public string SongId { get; set; }
 
-        public int Duration { get; set; }
+        public double Duration { get; set; }
 
         public DateTime ResquestTime { get; set; }
 

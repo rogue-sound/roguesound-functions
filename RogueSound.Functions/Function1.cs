@@ -80,6 +80,18 @@ namespace RogueSound.Functions
             // Yay pole!
             if (!songList.Any())
             {
+                var requestedSong = new SongQueueModel()
+                {
+                    SongId = data.SongId,
+                    ResquestTime = DateTime.UtcNow,
+                    Duration = data.Duration,
+                    StartTime = DateTime.UtcNow.AddSeconds(1),
+                    EndTime = DateTime.UtcNow.AddMilliseconds(data.Duration)
+                };
+
+                var partitionOptions = new RequestOptions { PartitionKey = new PartitionKey(0) };
+                await client.CreateDocumentAsync(queryUri, requestedSong, partitionOptions);
+
                 return new OkObjectResult(new SongCurrentModel { SongId = data.SongId, TimerPosition = 0 });
             }
             else
@@ -95,8 +107,10 @@ namespace RogueSound.Functions
 
                 var partitionOptions = new RequestOptions { PartitionKey = new PartitionKey(0) };
                 await client.CreateDocumentAsync(queryUri, requestedSong, partitionOptions);
+                
+                var currentSong = songList.Where(x => x.StartTime <= DateTime.UtcNow).OrderByDescending(x => x.StartTime).FirstOrDefault();
 
-                //return current song
+                return new OkObjectResult(new SongCurrentModel { SongId = currentSong.SongId, TimerPosition = DateTime.UtcNow.Subtract(currentSong.StartTime).TotalMilliseconds);
             }
         }
     }

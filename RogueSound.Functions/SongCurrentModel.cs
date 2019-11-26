@@ -8,6 +8,6 @@ namespace RogueSound.Functions
     {
         public string SongId { get; set; }
 
-        public int TimerPosition { get; set; }
+        public double TimerPosition { get; set; }
     }
 }
