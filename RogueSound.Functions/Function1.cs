@@ -9,6 +9,9 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Azure.Documents.Client;
+using System.Linq;
+using Microsoft.Azure.Documents.Linq;
+using System.Net.Http;
 
 namespace RogueSound.Functions
 {
@@ -41,22 +44,21 @@ namespace RogueSound.Functions
             return customClient;
         }
 
-        [FunctionName("GetSong")]
+        [FunctionName("GetCurrent")]
         public static async Task<IActionResult> GetSong(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
             ILogger log)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
+            var queryUri = UriFactory.CreateDocumentCollectionUri("RogueSound", "Songs");
+            var feedOptions = new FeedOptions { EnableCrossPartitionQuery = true };
 
-            string name = req.Query["name"];
+            var songList = client.CreateDocumentQuery<SongRequestModel>(queryUri, feedOptions).ToList();
 
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
-            name = name ?? data?.name;
+            if (!songList.Any()) return new NotFoundResult();
 
-            return name != null
-                ? (ActionResult)new OkObjectResult($"Hello, {name}")
-                : new BadRequestObjectResult("Please pass a name on the query string or in the request body");
+            var currentSong = songList.Where(x => x.StartTime < DateTime.UtcNow).OrderByDescending(x => x.StartTime).FirstOrDefault();
+
+            return new OkObjectResult(System.Net.HttpStatusCode.OK);
         }
 
         [FunctionName("AddSong")]
