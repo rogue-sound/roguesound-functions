@@ -34,7 +34,7 @@ namespace RogueSound.Functions
 
             if (songList.AnyUnplayed(data.SongId))
             {
-                songList.RemoveUnplayedSong(data.SongId);
+                var updatedSongList = songList.RemoveUnplayed(data.SongId);
             }
 
             return new OkResult();
