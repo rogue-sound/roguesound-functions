@@ -74,7 +74,9 @@ namespace RogueSound.Functions
 
             if (!currentSession.Songs.Any()) return new NotFoundResult();
 
-            var songList = currentSession.Songs;
+            var songList = currentSession.Songs.OrderByDescending(x => x.StartTime);
+
+            if (songList.FirstOrDefault().EndTime < DateTime.UtcNow) return new NotFoundResult();
 
             return new OkObjectResult(songList.ToResponseModel());
         }
@@ -95,11 +97,11 @@ namespace RogueSound.Functions
 
             var currentSession = (await currentSessionQuery.ExecuteNextAsync<RoomSessionModel>()).FirstOrDefault();
 
-            var songList = currentSession.Songs.ToList();
+            var songList = currentSession.Songs.OrderByDescending(x => x.StartTime).ToList();
 
-            if (!songList.Any())
+            if (!songList.Any() || songList.FirstOrDefault().EndTime < DateTime.UtcNow)
             {
-                songList.Add(new SongQueueModel()
+                songList.Insert(0, new SongQueueModel()
                 {
                     SongId = data.SongId,
                     Artist = data.Artist,
@@ -115,7 +117,7 @@ namespace RogueSound.Functions
             }
             else
             {
-                songList.Add(new SongQueueModel()
+                songList.Insert(0, new SongQueueModel()
                 {
                     SongId = data.SongId,
                     Artist = data.Artist,
