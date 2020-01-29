@@ -81,12 +81,11 @@ namespace RogueSound.Functions
 
             var currentSession = (await currentSessionQuery.ExecuteNextAsync<RoomSessionModel>()).FirstOrDefault();
 
-            var songList = currentSession.Songs;
+            var songList = currentSession.Songs.ToList();
 
-            // Yay pole!
             if (!songList.Any())
             {
-                var requestedSong = new SongQueueModel()
+                songList.Add(new SongQueueModel()
                 {
                     SongId = data.SongId,
                     Artist = data.Artist,
@@ -98,16 +97,11 @@ namespace RogueSound.Functions
                     Duration = data.Duration,
                     StartTime = DateTime.UtcNow.AddSeconds(1),
                     EndTime = DateTime.UtcNow.AddMilliseconds(data.Duration)
-                };
-
-                var partitionOptions = new RequestOptions { PartitionKey = new PartitionKey(0) };
-                await client.CreateDocumentAsync(queryUri, requestedSong, partitionOptions);
-
-                return new OkObjectResult(new SongCurrentModel { SongId = data.SongId, TimerPosition = 0 });
+                });
             }
             else
             {
-                var requestedSong = new SongQueueModel()
+                songList.Add(new SongQueueModel()
                 {
                     SongId = data.SongId,
                     Artist = data.Artist,
@@ -119,15 +113,18 @@ namespace RogueSound.Functions
                     Duration = data.Duration,
                     StartTime = songList.FirstOrDefault().EndTime.AddSeconds(1),
                     EndTime = songList.FirstOrDefault().EndTime.AddMilliseconds(data.Duration)
-                };
-
-                var partitionOptions = new RequestOptions { PartitionKey = new PartitionKey(0) };
-                await client.CreateDocumentAsync(queryUri, requestedSong, partitionOptions);
-                
-                var currentSong = songList.Where(x => x.StartTime <= DateTime.UtcNow).OrderByDescending(x => x.StartTime).FirstOrDefault();
-
-                return new OkObjectResult(new SongCurrentModel { SongId = currentSong.SongId, TimerPosition = DateTime.UtcNow.Subtract(currentSong.StartTime).TotalMilliseconds });
+                });
             }
+
+            currentSession.Songs = songList;
+
+            var updateUri = UriFactory.CreateDocumentUri("RogueSound", "Sessions", currentSession.id);
+
+            var partitionOptions = new RequestOptions { PartitionKey = new PartitionKey(0) };
+
+            await client.ReplaceDocumentAsync(updateUri, currentSession, partitionOptions);
+
+            return new OkObjectResult(currentSession.Songs.ToResponseModel());
         }
     }
 }

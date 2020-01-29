@@ -6,6 +6,8 @@ namespace RogueSound.Functions
 {
     public class RoomSessionModel
     {
+        public string id { get; set; }
+            
         public int RoomId { get; set; } = 0;
 
         public DateTime SessionDate { get; set; }
