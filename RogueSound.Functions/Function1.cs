@@ -62,7 +62,7 @@ namespace RogueSound.Functions
 
             var songList = currentSession.Songs;
 
-            return new OkObjectResult(songList);
+            return new OkObjectResult(songList.ToResponseModel());
         }
 
         [FunctionName("AddSong")]
