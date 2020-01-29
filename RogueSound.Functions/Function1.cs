@@ -53,10 +53,24 @@ namespace RogueSound.Functions
         {
             var queryUri = UriFactory.CreateDocumentCollectionUri("RogueSound", "Sessions");
             var feedOptions = new FeedOptions { PartitionKey = new PartitionKey(0) };
+            var partitionOptions = new RequestOptions { PartitionKey = new PartitionKey(0) };
 
             var currentSessionQuery = client.CreateDocumentQuery<RoomSessionModel>(queryUri, feedOptions).AsDocumentQuery();
 
             var currentSession = (await currentSessionQuery.ExecuteNextAsync<RoomSessionModel>()).FirstOrDefault();
+
+            if (currentSession == null)
+            {
+                currentSession = new RoomSessionModel
+                {
+                    id = Guid.NewGuid().ToString(),
+                    RoomId = 0,
+                    SessionDate = DateTime.Today,
+                    Songs = Enumerable.Empty<SongQueueModel>()
+                };
+
+                await client.CreateDocumentAsync(queryUri, currentSession, partitionOptions);
+            }
 
             if (!currentSession.Songs.Any()) return new NotFoundResult();
 

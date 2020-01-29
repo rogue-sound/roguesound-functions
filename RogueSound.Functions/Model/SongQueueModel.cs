@@ -32,7 +32,7 @@ namespace RogueSound.Functions
     {
         public static IEnumerable<SongQueueResponseModel> ToResponseModel(this IEnumerable<SongQueueModel> songs)
         {
-            var actualSongStart = songs.FirstOrDefault(x => x.StartTime < DateTime.UtcNow).StartTime;
+            var actualSongStart = songs.OrderByDescending(x => x.StartTime).FirstOrDefault(x => x.StartTime < DateTime.UtcNow).StartTime;
 
             return songs.Select(x => new SongQueueResponseModel
             {
