@@ -17,7 +17,7 @@ namespace RogueSound.Functions
     {
         [FunctionName("RemoveSong")]
         public static async Task<IActionResult> RemoveSong(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = null)] HttpRequest req,
             ILogger log)
         {
             log.LogInformation("HttpTriger, removing song");
