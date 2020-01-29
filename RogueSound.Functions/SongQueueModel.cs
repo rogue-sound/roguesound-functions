@@ -10,13 +10,13 @@ namespace RogueSound.Functions
 
         public string SongId { get; set; }
 
-        public string SongName { get; set; }
+        public string Title { get; set; }
 
         public string Artist { get; set; }
 
-        public string Album { get; set; }
+        public string AlbumName { get; set; }
 
-        public string Picture { get; set; }
+        public string AlbumImg { get; set; }
 
         public double Duration { get; set; }
 
