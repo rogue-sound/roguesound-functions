@@ -21,7 +21,28 @@ namespace RogueSound.Functions
         {
             var theOddOneOut = songQueue.Where(x => x.SongId == songId && x.StartTime > DateTime.UtcNow)
                 .OrderBy(x => x.StartTime).FirstOrDefault();
-            return songQueue.Except(new List<SongQueueModel>(){theOddOneOut});
+
+            return songQueue.Except(new List<SongQueueModel>(){theOddOneOut})
+                .FixQueueSongGapTimings(theOddOneOut);
+        }
+
+        public static IEnumerable<SongQueueModel> FixQueueSongGapTimings(this IEnumerable<SongQueueModel> songQueue, SongQueueModel gappedSong)
+        {
+            var gapSpan = TimeSpan.FromMilliseconds(gappedSong.Duration);
+
+            return songQueue.Select(x => new SongQueueModel()
+            {
+                AlbumImg = x.AlbumImg,
+                AlbumName = x.AlbumName,
+                Artist = x.Artist,
+                Duration = x.Duration,
+                EndTime = x.EndTime.Subtract(gapSpan),
+                ResquestTime = x.ResquestTime,
+                RoomId = x.RoomId,
+                SongId = x.SongId,
+                StartTime = x.StartTime.Subtract(gapSpan),
+                Title = x.Title
+            });
         }
     }
 }
