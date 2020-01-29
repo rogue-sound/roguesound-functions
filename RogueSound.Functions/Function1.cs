@@ -17,7 +17,7 @@ using System.Collections.Generic;
 
 namespace RogueSound.Functions
 {
-    public static class Function1
+    public static partial class RogueSoundFunctions
     {
         private static IConfigurationRoot config = new ConfigurationBuilder()
         .SetBasePath(Environment.CurrentDirectory)
