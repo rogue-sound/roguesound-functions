@@ -67,10 +67,10 @@ namespace RogueSound.Functions
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
             ILogger log)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
+            log.LogInformation("HttpTriger, adding new song");
 
             var queryUri = UriFactory.CreateDocumentCollectionUri("RogueSound", "Songs");
-            var feedOptions = new FeedOptions { EnableCrossPartitionQuery = true };
+            var feedOptions = new FeedOptions { PartitionKey = new PartitionKey(0) };
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
             var data = JsonConvert.DeserializeObject<SongRequestModel>(requestBody);
