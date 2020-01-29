@@ -34,7 +34,13 @@ namespace RogueSound.Functions
 
             if (songList.AnyUnplayed(data.SongId))
             {
-                var updatedSongList = songList.RemoveUnplayed(data.SongId);
+                currentSession.Songs = songList.RemoveUnplayed(data.SongId);
+
+                var uri = UriFactory.CreateDocumentUri("RogueSound", "Sessions", currentSession.id);
+
+                var partitionOptions = new RequestOptions { PartitionKey = new PartitionKey(0) };
+
+                await client.ReplaceDocumentAsync(queryUri, currentSession, partitionOptions);
             }
 
             return new OkResult();
