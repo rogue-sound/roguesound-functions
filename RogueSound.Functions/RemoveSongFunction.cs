@@ -32,7 +32,7 @@ namespace RogueSound.Functions
 
             var songList = currentSession.Songs.ToList();
 
-            if (songList.AnyFuture(data.SongId))
+            if (songList.AnyUnplayed(data.SongId))
             {
                 songList.RemoveUnplayedSong(data.SongId);
             }
