@@ -13,6 +13,7 @@ using System.Linq;
 using Microsoft.Azure.Documents.Linq;
 using System.Net.Http;
 using Microsoft.Azure.Documents;
+using System.Collections.Generic;
 
 namespace RogueSound.Functions
 {
@@ -50,16 +51,18 @@ namespace RogueSound.Functions
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
             ILogger log)
         {
-            var queryUri = UriFactory.CreateDocumentCollectionUri("RogueSound", "Songs");
+            var queryUri = UriFactory.CreateDocumentCollectionUri("RogueSound", "Sessions");
             var feedOptions = new FeedOptions { PartitionKey = new PartitionKey(0) };
 
-            var songList = client.CreateDocumentQuery<SongQueueModel>(queryUri, feedOptions).ToList();
+            var currentSessionQuery = client.CreateDocumentQuery<RoomSessionModel>(queryUri, feedOptions).AsDocumentQuery();
 
-            if (!songList.Any()) return new NotFoundResult();
+            var currentSession = (await currentSessionQuery.ExecuteNextAsync<RoomSessionModel>()).FirstOrDefault();
 
-            var currentSong = songList.Where(x => x.StartTime <= DateTime.UtcNow).OrderByDescending(x => x.StartTime).FirstOrDefault();
+            if (!currentSession.Songs.Any()) return new NotFoundResult();
 
-            return new OkObjectResult(new SongCurrentModel { SongId = currentSong.SongId, TimerPosition = DateTime.UtcNow.Subtract(currentSong.StartTime).TotalMilliseconds });
+            var songList = currentSession.Songs;
+
+            return new OkObjectResult(songList);
         }
 
         [FunctionName("AddSong")]
@@ -69,13 +72,16 @@ namespace RogueSound.Functions
         {
             log.LogInformation("HttpTriger, adding new song");
 
-            var queryUri = UriFactory.CreateDocumentCollectionUri("RogueSound", "Songs");
+            var data = JsonConvert.DeserializeObject<AddSongRequestModel>(await req.ReadAsStringAsync());
+
+            var queryUri = UriFactory.CreateDocumentCollectionUri("RogueSound", "Sessions");
             var feedOptions = new FeedOptions { PartitionKey = new PartitionKey(0) };
 
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            var data = JsonConvert.DeserializeObject<SongRequestModel>(requestBody);
+            var currentSessionQuery = client.CreateDocumentQuery<RoomSessionModel>(queryUri, feedOptions).AsDocumentQuery();
 
-            var songList = client.CreateDocumentQuery<SongQueueModel>(queryUri, feedOptions).OrderByDescending(x => x.StartTime).ToList();
+            var currentSession = (await currentSessionQuery.ExecuteNextAsync<RoomSessionModel>()).FirstOrDefault();
+
+            var songList = currentSession.Songs;
 
             // Yay pole!
             if (!songList.Any())
@@ -83,6 +89,11 @@ namespace RogueSound.Functions
                 var requestedSong = new SongQueueModel()
                 {
                     SongId = data.SongId,
+                    Artist = data.Artist,
+                    AlbumName = data.AlbumName,
+                    AlbumImg = data.AlbumImg,
+                    RoomId = 0,
+                    Title = data.Title,
                     ResquestTime = DateTime.UtcNow,
                     Duration = data.Duration,
                     StartTime = DateTime.UtcNow.AddSeconds(1),
@@ -99,6 +110,11 @@ namespace RogueSound.Functions
                 var requestedSong = new SongQueueModel()
                 {
                     SongId = data.SongId,
+                    Artist = data.Artist,
+                    AlbumName = data.AlbumName,
+                    AlbumImg = data.AlbumImg,
+                    RoomId = 0,
+                    Title = data.Title,
                     ResquestTime = DateTime.UtcNow,
                     Duration = data.Duration,
                     StartTime = songList.FirstOrDefault().EndTime.AddSeconds(1),

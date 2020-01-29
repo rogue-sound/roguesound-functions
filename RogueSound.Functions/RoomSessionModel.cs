@@ -6,5 +6,10 @@ namespace RogueSound.Functions
 {
     public class RoomSessionModel
     {
+        public int RoomId { get; set; } = 0;
+
+        public DateTime SessionDate { get; set; }
+
+        public IEnumerable<SongQueueModel> Songs { get; set; }
     }
 }
