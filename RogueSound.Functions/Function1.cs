@@ -57,7 +57,7 @@ namespace RogueSound.Functions
 
             var currentSessionQuery = client.CreateDocumentQuery<RoomSessionModel>(queryUri, feedOptions).AsDocumentQuery();
 
-            var currentSession = (await currentSessionQuery.ExecuteNextAsync<RoomSessionModel>()).FirstOrDefault();
+            var currentSession = (await currentSessionQuery.ExecuteNextAsync<RoomSessionModel>()).Where(x => x.SessionDate == DateTime.Today).FirstOrDefault();
 
             if (currentSession == null)
             {
@@ -93,7 +93,7 @@ namespace RogueSound.Functions
             var queryUri = UriFactory.CreateDocumentCollectionUri("RogueSound", "Sessions");
             var feedOptions = new FeedOptions { PartitionKey = new PartitionKey(0) };
 
-            var currentSessionQuery = client.CreateDocumentQuery<RoomSessionModel>(queryUri, feedOptions).AsDocumentQuery();
+            var currentSessionQuery = client.CreateDocumentQuery<RoomSessionModel>(queryUri, feedOptions).Where(x => x.SessionDate == DateTime.Today).AsDocumentQuery();
 
             var currentSession = (await currentSessionQuery.ExecuteNextAsync<RoomSessionModel>()).FirstOrDefault();
 
@@ -103,6 +103,7 @@ namespace RogueSound.Functions
             {
                 songList.Insert(0, new SongQueueModel()
                 {
+                    User = data.User,
                     SongId = data.SongId,
                     Artist = data.Artist,
                     AlbumName = data.AlbumName,
@@ -119,6 +120,7 @@ namespace RogueSound.Functions
             {
                 songList.Insert(0, new SongQueueModel()
                 {
+                    User = data.User,
                     SongId = data.SongId,
                     Artist = data.Artist,
                     AlbumName = data.AlbumName,

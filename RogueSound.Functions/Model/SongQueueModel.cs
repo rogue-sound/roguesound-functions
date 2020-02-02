@@ -9,6 +9,8 @@ namespace RogueSound.Functions
     {
         public int RoomId { get; set; }
 
+        public string User { get; set; }
+
         public string SongId { get; set; }
 
         public string Title { get; set; }
@@ -36,6 +38,7 @@ namespace RogueSound.Functions
 
             return songs.Select(x => new SongQueueResponseModel
             {
+                User = x.User,
                 RoomId = x.RoomId,
                 SongId = x.SongId,
                 Title = x.Title,
