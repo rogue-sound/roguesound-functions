@@ -23,7 +23,7 @@ namespace RogueSound.Functions
 
         public double Duration { get; set; }
 
-        public DateTime ResquestTime { get; set; }
+        public DateTime RequestTime { get; set; }
 
         public DateTime StartTime { get; set; }
 
@@ -49,7 +49,7 @@ namespace RogueSound.Functions
                 IsCurrent = (actualSongStart == x.StartTime) ? true : false,
                 Position = (actualSongStart == x.StartTime) ? (DateTime.UtcNow - actualSongStart).TotalMilliseconds : 0,
                 EndTime = x.EndTime,
-                ResquestTime = x.ResquestTime,
+                ResquestTime = x.RequestTime,
                 StartTime = x.StartTime
             });
 

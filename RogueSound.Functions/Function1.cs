@@ -55,12 +55,16 @@ namespace RogueSound.Functions
             var feedOptions = new FeedOptions { PartitionKey = new PartitionKey(0) };
             var partitionOptions = new RequestOptions { PartitionKey = new PartitionKey(0) };
 
-            var currentSessionQuery = client.CreateDocumentQuery<RoomSessionModel>(queryUri, feedOptions).AsDocumentQuery();
+            log.LogInformation($"Querying session for {DateTime.Today}");
 
-            var currentSession = (await currentSessionQuery.ExecuteNextAsync<RoomSessionModel>()).Where(x => x.SessionDate == DateTime.Today).FirstOrDefault();
+            var currentSessionQuery = client.CreateDocumentQuery<RoomSessionModel>(queryUri, feedOptions).Where(x => x.SessionDate == DateTime.Today).AsDocumentQuery();
+
+            var currentSession = (await currentSessionQuery.ExecuteNextAsync<RoomSessionModel>()).FirstOrDefault();
 
             if (currentSession == null)
             {
+                log.LogInformation($"Null current session, creating new");
+
                 currentSession = new RoomSessionModel
                 {
                     id = Guid.NewGuid().ToString(),
@@ -72,13 +76,11 @@ namespace RogueSound.Functions
                 await client.CreateDocumentAsync(queryUri, currentSession, partitionOptions);
             }
 
-            if (!currentSession.Songs.Any()) return new NotFoundResult();
+            log.LogInformation($"Retrieved {currentSession.Songs.Count()} songs");
 
-            var songList = currentSession.Songs.OrderByDescending(x => x.StartTime);
+            currentSession.Songs = currentSession.Songs.OrderByDescending(x => x.StartTime);
 
-            if (songList.FirstOrDefault().EndTime < DateTime.UtcNow) return new NotFoundResult();
-
-            return new OkObjectResult(songList.ToResponseModel());
+            return new OkObjectResult(currentSession.ToResponseModel());
         }
 
         [FunctionName("AddSong")]
@@ -97,20 +99,26 @@ namespace RogueSound.Functions
 
             var currentSession = (await currentSessionQuery.ExecuteNextAsync<RoomSessionModel>()).FirstOrDefault();
 
+            log.LogInformation($"Null current session, wops");
+
+            if (currentSession == null) return new NotFoundResult();
+
             var songList = currentSession.Songs.OrderByDescending(x => x.StartTime).ToList();
 
             if (!songList.Any() || songList.FirstOrDefault().EndTime < DateTime.UtcNow)
             {
+                log.LogInformation($"Queue already ended, StartTime set to now");
+
                 songList.Insert(0, new SongQueueModel()
                 {
-                    User = data.User,
+                    User = data.User ?? "anonymous",
                     SongId = data.SongId,
                     Artist = data.Artist,
                     AlbumName = data.AlbumName,
                     AlbumImg = data.AlbumImg,
                     RoomId = 0,
                     Title = data.Title,
-                    ResquestTime = DateTime.UtcNow,
+                    RequestTime = DateTime.UtcNow,
                     Duration = data.Duration,
                     StartTime = DateTime.UtcNow.AddSeconds(1),
                     EndTime = DateTime.UtcNow.AddMilliseconds(data.Duration)
@@ -120,14 +128,14 @@ namespace RogueSound.Functions
             {
                 songList.Insert(0, new SongQueueModel()
                 {
-                    User = data.User,
+                    User = data.User ?? "anonymous",
                     SongId = data.SongId,
                     Artist = data.Artist,
                     AlbumName = data.AlbumName,
                     AlbumImg = data.AlbumImg,
                     RoomId = 0,
                     Title = data.Title,
-                    ResquestTime = DateTime.UtcNow,
+                    RequestTime = DateTime.UtcNow,
                     Duration = data.Duration,
                     StartTime = songList.FirstOrDefault().EndTime.AddSeconds(1),
                     EndTime = songList.FirstOrDefault().EndTime.AddMilliseconds(data.Duration)
@@ -142,7 +150,7 @@ namespace RogueSound.Functions
 
             await client.ReplaceDocumentAsync(updateUri, currentSession, partitionOptions);
 
-            return new OkObjectResult(currentSession.Songs.ToResponseModel());
+            return new OkObjectResult(currentSession.ToResponseModel());
         }
     }
 }

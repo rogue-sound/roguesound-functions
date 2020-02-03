@@ -37,7 +37,7 @@ namespace RogueSound.Functions
                 Artist = x.Artist,
                 Duration = x.Duration,
                 EndTime = x.EndTime.Subtract(gapSpan),
-                ResquestTime = x.ResquestTime,
+                RequestTime = x.RequestTime,
                 RoomId = x.RoomId,
                 SongId = x.SongId,
                 StartTime = x.StartTime.Subtract(gapSpan),
