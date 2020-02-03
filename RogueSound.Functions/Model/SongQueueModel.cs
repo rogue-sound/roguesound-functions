@@ -32,27 +32,23 @@ namespace RogueSound.Functions
 
     public static class SongQueueModelExtensions
     {
-        public static IEnumerable<SongQueueResponseModel> ToResponseModel(this IEnumerable<SongQueueModel> songs)
+        public static SongQueueResponseModel ToResponseModel(this SongQueueModel song)
         {
-            var actualSongStart = songs.FirstOrDefault(x => x.StartTime < DateTime.UtcNow).StartTime;
-
-            return songs.Select(x => new SongQueueResponseModel
+            return new SongQueueResponseModel
             {
-                User = x.User,
-                RoomId = x.RoomId,
-                SongId = x.SongId,
-                Title = x.Title,
-                Artist = x.Artist,
-                AlbumName = x.AlbumName,
-                AlbumImg = x.AlbumImg,
-                Duration = x.Duration,
-                IsCurrent = (actualSongStart == x.StartTime) ? true : false,
-                Position = (actualSongStart == x.StartTime) ? (DateTime.UtcNow - actualSongStart).TotalMilliseconds : 0,
-                EndTime = x.EndTime,
-                ResquestTime = x.RequestTime,
-                StartTime = x.StartTime
-            });
-
+                User = song.User,
+                RoomId = song.RoomId,
+                SongId = song.SongId,
+                Title = song.Title,
+                Artist = song.Artist,
+                AlbumName = song.AlbumName,
+                AlbumImg = song.AlbumImg,
+                Duration = song.Duration,
+                Position = (DateTime.UtcNow - song.StartTime).TotalMilliseconds,
+                EndTime = song.EndTime,
+                ResquestTime = song.RequestTime,
+                StartTime = song.StartTime
+            };
         }
     }
 }

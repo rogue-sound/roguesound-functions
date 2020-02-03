@@ -22,8 +22,6 @@ namespace RogueSound.Functions
 
         public double Position { get; set; }
 
-        public bool IsCurrent { get; set; }
-
         public DateTime ResquestTime { get; set; }
 
         public DateTime StartTime { get; set; }
