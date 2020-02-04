@@ -99,7 +99,11 @@ namespace RogueSound.Functions
             var queryUri = UriFactory.CreateDocumentCollectionUri("RogueSound", "Sessions");
             var feedOptions = new FeedOptions { PartitionKey = new PartitionKey(0) };
 
-            var currentSessionQuery = client.CreateDocumentQuery<RoomSessionModel>(queryUri, feedOptions).Where(x => x.SessionDate == DateTime.Today).AsDocumentQuery();
+            var currentSessionQuery = client.CreateDocumentQuery<RoomSessionModel>(queryUri, feedOptions)
+                .Where(x => x.SessionDate == DateTime.Today)
+                .OrderBy(x => x.CreatedAt)
+                .Take(1)
+                .AsDocumentQuery();
 
             var currentSession = (await currentSessionQuery.ExecuteNextAsync<RoomSessionModel>()).FirstOrDefault();
 
