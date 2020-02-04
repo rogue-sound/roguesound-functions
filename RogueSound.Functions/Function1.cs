@@ -57,7 +57,11 @@ namespace RogueSound.Functions
 
             log.LogInformation($"Querying session for {DateTime.Today}");
 
-            var currentSessionQuery = client.CreateDocumentQuery<RoomSessionModel>(queryUri, feedOptions).Where(x => x.SessionDate == DateTime.Today).AsDocumentQuery();
+            var currentSessionQuery = client.CreateDocumentQuery<RoomSessionModel>(queryUri, feedOptions)
+                .Where(x => x.SessionDate == DateTime.Today)
+                .OrderBy( x => x.CreatedAt)
+                .Take(1)
+                .AsDocumentQuery();
 
             var currentSession = (await currentSessionQuery.ExecuteNextAsync<RoomSessionModel>()).FirstOrDefault();
 

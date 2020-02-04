@@ -11,6 +11,8 @@ namespace RogueSound.Functions
             
         public int RoomId { get; set; } = 0;
 
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
         public DateTime SessionDate { get; set; }
 
         public IEnumerable<SongQueueModel> Songs { get; set; }
@@ -37,7 +39,7 @@ namespace RogueSound.Functions
             {
                 RoomId = model.RoomId,
                 SessionDate = model.SessionDate,
-                Current = (currentSong != null && currentSong.EndTime < DateTime.UtcNow)? null : currentSong.ToResponseModel(),
+                Current = (currentSong != null && currentSong.EndTime < DateTime.UtcNow) ? null : currentSong.ToResponseModel(),
                 Songs = model.Songs
             };
         }

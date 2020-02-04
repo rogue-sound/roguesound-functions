@@ -34,6 +34,8 @@ namespace RogueSound.Functions
     {
         public static SongQueueResponseModel ToResponseModel(this SongQueueModel song)
         {
+            if (song == null) return null;
+
             return new SongQueueResponseModel
             {
                 User = song.User,
