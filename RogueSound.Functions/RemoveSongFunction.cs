@@ -10,6 +10,7 @@ using Microsoft.Azure.Documents.Client;
 using System.Linq;
 using Microsoft.Azure.Documents.Linq;
 using Microsoft.Azure.Documents;
+using System.Collections.Generic;
 
 namespace RogueSound.Functions
 {
@@ -17,7 +18,7 @@ namespace RogueSound.Functions
     {
         [FunctionName("RemoveSong")]
         public static async Task<IActionResult> RemoveSong(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
             ILogger log)
         {
             log.LogInformation("HttpTriger, removing song");
@@ -27,8 +28,21 @@ namespace RogueSound.Functions
             var queryUri = UriFactory.CreateDocumentCollectionUri("RogueSound", "Sessions");
             var feedOptions = new FeedOptions { PartitionKey = new PartitionKey(0) };
 
-            var currentSessionQuery = client.CreateDocumentQuery<RoomSessionModel>(queryUri, feedOptions).AsDocumentQuery();
-            var currentSession = (await currentSessionQuery.ExecuteNextAsync<RoomSessionModel>()).FirstOrDefault();
+            var todayDate = DateTime.SpecifyKind(DateTime.Today, DateTimeKind.Utc);
+
+            var currentSessionQuery = client.CreateDocumentQuery<RoomSessionModel>(queryUri, feedOptions)
+                .Where(x => x.SessionDate == todayDate)
+                .OrderBy(x => x.CreatedAt)
+                .Take(1)
+                .AsDocumentQuery();
+
+            var sessionsReturned = new List<RoomSessionModel>();
+
+            while (currentSessionQuery.HasMoreResults) sessionsReturned.AddRange(await currentSessionQuery.ExecuteNextAsync<RoomSessionModel>());
+
+            var currentSession = sessionsReturned.FirstOrDefault();
+
+            log.LogInformation($"Returned {sessionsReturned.Count} sessions");
 
             var songList = currentSession.Songs.ToList();
 

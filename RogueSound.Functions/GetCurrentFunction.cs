@@ -55,10 +55,12 @@ namespace RogueSound.Functions
             var feedOptions = new FeedOptions { PartitionKey = new PartitionKey(0) };
             var partitionOptions = new RequestOptions { PartitionKey = new PartitionKey(0) };
 
-            log.LogInformation($"Querying session for {DateTime.Today}");
+            var todayDate = DateTime.SpecifyKind(DateTime.Today, DateTimeKind.Utc);
+
+            log.LogInformation($"Querying session for {todayDate}");
 
             var currentSessionQuery = client.CreateDocumentQuery<RoomSessionModel>(queryUri, feedOptions)
-                .Where(x => x.SessionDate == DateTime.Today)
+                .Where(x => x.SessionDate == todayDate)
                 .OrderBy( x => x.CreatedAt)
                 .Take(1)
                 .AsDocumentQuery();
@@ -79,7 +81,7 @@ namespace RogueSound.Functions
                 {
                     id = Guid.NewGuid().ToString(),
                     RoomId = 0,
-                    SessionDate = DateTime.Today,
+                    SessionDate = todayDate,
                     Songs = Enumerable.Empty<SongQueueModel>()
                 };
 
