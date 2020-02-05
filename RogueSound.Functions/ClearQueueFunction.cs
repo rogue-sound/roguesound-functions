@@ -23,8 +23,6 @@ namespace RogueSound.Functions
         {
             log.LogInformation("HttpTriger, clearing queue");
 
-            var data = JsonConvert.DeserializeObject<RemoveSongRequestModel>(await req.ReadAsStringAsync());
-
             var queryUri = UriFactory.CreateDocumentCollectionUri("RogueSound", "Sessions");
             var feedOptions = new FeedOptions { PartitionKey = new PartitionKey(0) };
 
@@ -44,17 +42,17 @@ namespace RogueSound.Functions
 
             log.LogInformation($"Returned {sessionsReturned.Count} sessions");
 
-            var songList = currentSession.Songs.ToList();
+            var songList = currentSession.Songs;
 
             if (songList.Any())
             {
-                currentSession.Songs = new List<SongQueueModel>();
+                currentSession.Songs = Enumerable.Empty<SongQueueModel>();
 
                 var uri = UriFactory.CreateDocumentUri("RogueSound", "Sessions", currentSession.id);
 
                 var partitionOptions = new RequestOptions { PartitionKey = new PartitionKey(0) };
 
-                await client.ReplaceDocumentAsync(queryUri, currentSession, partitionOptions);
+                await client.ReplaceDocumentAsync(uri, currentSession, partitionOptions);
             }
 
             return new OkResult();
