@@ -26,6 +26,8 @@ namespace RogueSound.Functions
 
             var data = JsonConvert.DeserializeObject<AddSongRequestModel>(await req.ReadAsStringAsync());
 
+            if (string.IsNullOrEmpty(data.User)) return new BadRequestObjectResult("Request made from an unlogged client");
+
             var queryUri = UriFactory.CreateDocumentCollectionUri("RogueSound", "Sessions");
             var feedOptions = new FeedOptions { PartitionKey = new PartitionKey(0) };
 
