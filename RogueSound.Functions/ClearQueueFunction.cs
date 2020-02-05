@@ -52,7 +52,7 @@ namespace RogueSound.Functions
 
                 var partitionOptions = new RequestOptions { PartitionKey = new PartitionKey(0) };
 
-                await client.ReplaceDocumentAsync(uri, currentSession, partitionOptions);
+                await client.ReplaceDocumentAsync(uri, currentSession, partitionOptions); // Thanks javi, disflexia is a real condition
             }
 
             return new OkResult();
