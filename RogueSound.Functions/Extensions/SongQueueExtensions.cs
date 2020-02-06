@@ -32,6 +32,7 @@ namespace RogueSound.Functions
 
             return songQueue.Select(x => new SongQueueModel()
             {
+                User = x.User,
                 AlbumImg = x.AlbumImg,
                 AlbumName = x.AlbumName,
                 Artist = x.Artist,

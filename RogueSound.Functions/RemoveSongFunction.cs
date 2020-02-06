@@ -54,7 +54,7 @@ namespace RogueSound.Functions
 
                 var partitionOptions = new RequestOptions { PartitionKey = new PartitionKey(0) };
 
-                await client.ReplaceDocumentAsync(queryUri, currentSession, partitionOptions);
+                await client.ReplaceDocumentAsync(uri, currentSession, partitionOptions);
             }
 
             return new OkResult();
