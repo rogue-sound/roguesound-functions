@@ -17,7 +17,7 @@ namespace RogueSound.Functions
     public static partial class RogueSoundFunctions
     {
         [FunctionName("GetUpdates")]
-        public static async Task<IActionResult> GetUpdatesFunction(
+        public static async Task<IActionResult> GetUpdates(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
             ILogger log)
         {

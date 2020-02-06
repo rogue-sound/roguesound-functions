@@ -17,7 +17,7 @@ namespace RogueSound.Functions
     public static partial class RogueSoundFunctions
     {
         [FunctionName("ClearQueue")]
-        public static async Task<IActionResult> ClearQueueFunction(
+        public static async Task<IActionResult> ClearQueue(
             [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = null)] HttpRequest req,
             ILogger log)
         {
