@@ -7,6 +7,8 @@ namespace RogueSound.Functions
 {
     public class SongQueueModel
     {
+        public Guid PublicId { get; set; }
+
         public int RoomId { get; set; }
 
         public string User { get; set; }
@@ -38,6 +40,7 @@ namespace RogueSound.Functions
 
             return new SongQueueResponseModel
             {
+                PublicId = song.PublicId,
                 User = song.User,
                 RoomId = song.RoomId,
                 SongId = song.SongId,
