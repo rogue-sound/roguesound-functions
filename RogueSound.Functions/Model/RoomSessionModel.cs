@@ -15,6 +15,12 @@ namespace RogueSound.Functions
 
         public DateTime SessionDate { get; set; }
 
+        public bool IsPaused { get; set; } = false;
+
+        public DateTime PausedAt { get; set; }
+
+        public DateTime CurrentWhenPaused { get; set; }
+
         public IEnumerable<SongQueueModel> Songs { get; set; }
     }
 
@@ -23,6 +29,8 @@ namespace RogueSound.Functions
         public int RoomId { get; set; } = 0;
 
         public DateTime SessionDate { get; set; }
+
+        public bool IsPaused { get; set; }
 
         public SongQueueResponseModel Current { get; set; }
 
@@ -40,7 +48,8 @@ namespace RogueSound.Functions
                 RoomId = model.RoomId,
                 SessionDate = model.SessionDate,
                 Current = (currentSong != null && currentSong.EndTime < DateTime.UtcNow) ? null : currentSong.ToResponseModel(),
-                Songs = model.Songs
+                Songs = model.Songs,
+                IsPaused = model.IsPaused
             };
         }
     }
