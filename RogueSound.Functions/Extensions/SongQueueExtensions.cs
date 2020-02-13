@@ -50,7 +50,8 @@ namespace RogueSound.Functions
                 RoomId = x.RoomId,
                 SongId = x.SongId,
                 StartTime = x.StartTime.Subtract(gapSpan),
-                Title = x.Title
+                Title = x.Title,
+                PublicId = x.PublicId
             });
         }
     }
