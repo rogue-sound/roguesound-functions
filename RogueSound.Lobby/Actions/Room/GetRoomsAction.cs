@@ -8,13 +8,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RogueSound.Lobby.Actions.Room
+namespace RogueSound.Lobby.Actions
 {
     public class GetRoomsAction
     {
-        private readonly CosmyClient cosmyClient;
+        private readonly ICosmyClient cosmyClient;
 
-        public GetRoomsAction(CosmyClient cosmyClient)
+        public GetRoomsAction(ICosmyClient cosmyClient)
         {
             this.cosmyClient = cosmyClient;
         }

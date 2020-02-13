@@ -4,10 +4,13 @@
     <AzureFunctionsVersion>v3</AzureFunctionsVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Cosmy" Version="1.0.0" />
+    <PackageReference Include="Cosmy" Version="1.1.0" />
     <PackageReference Include="Cosmy.DependencyInjection" Version="1.0.0" />
     <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.0.0" />
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="3.0.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RogueSound.Common\RogueSound.Common.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="host.json">

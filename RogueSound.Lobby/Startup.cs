@@ -1,5 +1,7 @@
 ﻿using Cosmy.DependencyInjection;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
+using RogueSound.Lobby.Actions;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -19,6 +21,9 @@ namespace RogueSound.Lobby
                 Endpoint = Environment.GetEnvironmentVariable("CosmosEndpoint"),
                 Key = Environment.GetEnvironmentVariable("CosmosKey")
             });
+
+            services.AddScoped(typeof(GetRoomsAction));
+            services.AddScoped(typeof(AddRoomAction));
         }
     }
 }
