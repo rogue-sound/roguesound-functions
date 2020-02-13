@@ -59,6 +59,7 @@ namespace RogueSound.Functions
 
                 songList.Insert(0, new SongQueueModel()
                 {
+                    PublicId = Guid.NewGuid(),
                     User = data.User ?? "anonymous",
                     SongId = data.SongId,
                     Artist = data.Artist,
@@ -76,6 +77,7 @@ namespace RogueSound.Functions
             {
                 songList.Insert(0, new SongQueueModel()
                 {
+                    PublicId = Guid.NewGuid(),
                     User = data.User ?? "anonymous",
                     SongId = data.SongId,
                     Artist = data.Artist,
