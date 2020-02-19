@@ -11,6 +11,10 @@ namespace RogueSound.Common.Models
 
         public Guid PublicId { get; set; }
 
+        public DateTime CreatedAt { get; set; }
+
+        public string Creator { get; set; }
+
         public string Name { get; set; }
 
         public string Description { get; set; }
@@ -20,8 +24,6 @@ namespace RogueSound.Common.Models
         public string Logo { get; set; }
 
         public string Cover { get; set; }
-
-        public IEnumerable<string> Members { get; set; }
 
         public SessionConfiguration DefaultConfig { get; set; }
 

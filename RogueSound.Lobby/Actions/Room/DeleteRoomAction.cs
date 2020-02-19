@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RogueSound.Lobby.Actions.Room
+namespace RogueSound.Lobby.Actions
 {
     public class DeleteRoomAction
     {

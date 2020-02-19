@@ -6,6 +6,7 @@
   <ItemGroup>
     <PackageReference Include="Cosmy" Version="1.1.0" />
     <PackageReference Include="Cosmy.DependencyInjection" Version="1.0.0" />
+    <PackageReference Include="EzyPaging" Version="1.0.0" />
     <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.0.0" />
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="3.0.1" />
   </ItemGroup>

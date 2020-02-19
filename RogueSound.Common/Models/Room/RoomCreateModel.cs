@@ -8,6 +8,8 @@ namespace RogueSound.Common.Models
 {
     public class RoomCreateModel
     {
+        public string Creator { get; set; }
+
         public string Name { get; set; }
 
         public string Description { get; set; }
@@ -23,10 +25,11 @@ namespace RogueSound.Common.Models
             {
                 id = Guid.NewGuid().ToString(),
                 PublicId = Guid.NewGuid(),
+                CreatedAt = DateTime.UtcNow,
+                Creator = room.Creator,
                 Name = room.Name,
                 Description = room.Description,
                 Private = room.Private,
-                Members = Enumerable.Empty<string>(),
                 Region = RoomConstants.RoomPartitionKey
             };
         }

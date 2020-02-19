@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using EzyPaging;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -14,6 +15,7 @@ namespace RogueSound.Lobby.Endpoints
     public class RoomsEndpoints
     {
         private readonly GetRoomsAction getRoomsAction;
+        private readonly GetUserRoomsAction getUserRoomsAction;
 
         public RoomsEndpoints(GetRoomsAction getRoomsAction)
         {
@@ -24,7 +26,18 @@ namespace RogueSound.Lobby.Endpoints
         public async Task<IActionResult> GetRooms(
         [HttpTrigger(AuthorizationLevel.Function, "get", Route = "Rooms")] HttpRequest req, ILogger log)
         {
-            log.LogInformation("Serving request querying all rooms");
+            var paging = req.ExtractPaging();
+
+            log.LogInformation("Serving request querying all public rooms");
+
+            return await this.getRoomsAction.ExecuteAsync(paging);
+        }
+
+        [FunctionName(nameof(GetUserRooms))]
+        public async Task<IActionResult> GetUserRooms(
+        [HttpTrigger(AuthorizationLevel.Function, "get", Route = "Rooms/UserRooms")] HttpRequest req, ILogger log)
+        {
+            log.LogInformation("Serving request for all user  rooms");
 
             return await this.getRoomsAction.ExecuteAsync();
         }
