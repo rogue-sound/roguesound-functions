@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using RogueSound.Common.Models;
 using RogueSound.Lobby.Actions;
 using System;
 using System.Collections.Generic;
@@ -16,10 +18,13 @@ namespace RogueSound.Lobby.Endpoints
     {
         private readonly GetRoomsAction getRoomsAction;
         private readonly GetUserRoomsAction getUserRoomsAction;
+        private readonly AddRoomAction addRoomAction;
 
-        public RoomsEndpoints(GetRoomsAction getRoomsAction)
+        public RoomsEndpoints(GetRoomsAction getRoomsAction, GetUserRoomsAction getUserRoomsAction, AddRoomAction addRoomAction)
         {
             this.getRoomsAction = getRoomsAction;
+            this.addRoomAction = addRoomAction;
+            this.getUserRoomsAction = getUserRoomsAction;
         }
 
         [FunctionName(nameof(GetRooms))]
@@ -39,16 +44,16 @@ namespace RogueSound.Lobby.Endpoints
         {
             log.LogInformation("Serving request for all user  rooms");
 
-            return await this.getRoomsAction.ExecuteAsync();
+            var paging = req.ExtractPaging();
+
+            return await this.getUserRoomsAction.ExecuteAsync(paging);
         }
 
         [FunctionName(nameof(GetRoomDetails))]
         public async Task<IActionResult> GetRoomDetails(
         [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = "Rooms/{roomId}")] HttpRequest req, ILogger log)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
-
-            string name = req.Query["name"];
+            log.LogInformation("Serving request: GetRoomDetails");
 
             return new OkResult();
         }
@@ -57,9 +62,13 @@ namespace RogueSound.Lobby.Endpoints
         public async Task<IActionResult> AddRoom(
         [HttpTrigger(AuthorizationLevel.Function, "post", Route = "Rooms")] HttpRequest req, ILogger log)
         {
-            log.LogInformation("Serving request querying all rooms");
+            log.LogInformation("Serving request: add a new room");
 
-            return await this.getRoomsAction.ExecuteAsync();
+            var reqBody = JsonConvert.DeserializeObject<RoomCreateModel>(await req.ReadAsStringAsync());
+
+            if (reqBody == null) return new BadRequestResult();
+
+            return await this.addRoomAction.ExecuteAsync(reqBody);
         }
     }
 }

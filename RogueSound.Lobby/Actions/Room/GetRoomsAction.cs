@@ -23,7 +23,7 @@ namespace RogueSound.Lobby.Actions
         public async Task<IActionResult> ExecuteAsync(PageModel pageModel)
         {
             var roomsQuery = this.cosmyClient.CreateDocumentQuery<RoomModel>(RoomConstants.Collection, RoomConstants.RoomPartitionKey).Where(x => x.Private == false).AddPaging(pageModel);
-            var publicRooms = await roomsQuery.ExecuteQuery<RoomModel, RoomResponseModel>();
+            var publicRooms = await roomsQuery.ExecuteQuery<RoomModel, RoomListResponseModel>();
 
             return new OkObjectResult(publicRooms);
         }
