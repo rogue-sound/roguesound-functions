@@ -22,21 +22,22 @@ namespace RogueSound.Functions
             var theOddOneOut = songQueue.Where(x => x.SongId == songId && x.StartTime > DateTime.UtcNow)
                 .OrderBy(x => x.StartTime).FirstOrDefault();
 
-            return songQueue.Except(new List<SongQueueModel>(){theOddOneOut})
+            return songQueue.Except(new List<SongQueueModel>() { theOddOneOut })
                 .FixQueueSongGapTimings(theOddOneOut);
         }
 
         public static IEnumerable<SongQueueModel> RemoveCurrent(this IEnumerable<SongQueueModel> songQueue)
         {
-            var playingSong = songQueue.Where(x => x.StartTime < DateTime.Now && x.EndTime > DateTime.UtcNow).FirstOrDefault();
+            var currentSong = songQueue.Where(x => DateTime.UtcNow > x.StartTime && DateTime.UtcNow < x.EndTime).FirstOrDefault();
 
-            return songQueue.Except(new List<SongQueueModel>() { playingSong })
-                .FixQueueSongGapTimings(playingSong);
+            return songQueue.Except(new List<SongQueueModel>() { currentSong })
+                .FixQueueSongGapTimings(currentSong);
         }
 
         public static IEnumerable<SongQueueModel> FixQueueSongGapTimings(this IEnumerable<SongQueueModel> songQueue, SongQueueModel gappedSong)
         {
-            var gapSpan = TimeSpan.FromMilliseconds(gappedSong.Duration);
+            var gapSpan = gappedSong.IsSongCurrent() ?
+                TimeSpan.FromMilliseconds(gappedSong.Duration).Subtract(DateTime.UtcNow - gappedSong.StartTime) : TimeSpan.FromMilliseconds(gappedSong.Duration);
 
             return songQueue.Select(x => new SongQueueModel()
             {
