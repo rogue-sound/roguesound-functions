@@ -22,7 +22,7 @@ namespace RogueSound.Functions
             ILogger log)
         {
             var data = JsonConvert.DeserializeObject<SkipSongRequestModel>(await req.ReadAsStringAsync());
-            log.LogInformation($"HttpTriger, skipping song in session {data.RoomSessionId})");
+            log.LogInformation($"HttpTriger, skipping song in session {data?.RoomSessionId})");
 
             var queryUri = UriFactory.CreateDocumentCollectionUri("RogueSound", "Sessions");
             var feedOptions = new FeedOptions { PartitionKey = new PartitionKey(0) };
@@ -41,7 +41,7 @@ namespace RogueSound.Functions
 
             var currentSession = sessionsReturned.FirstOrDefault();
 
-            log.LogInformation($"Returned {sessionsReturned.Count} sessions");
+            log.LogInformation($"Returned {sessionsReturned?.Count} sessions");
 
             var songList = currentSession.Songs.ToList();
 
