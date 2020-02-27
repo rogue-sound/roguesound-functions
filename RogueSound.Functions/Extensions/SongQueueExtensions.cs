@@ -54,5 +54,10 @@ namespace RogueSound.Functions
                 PublicId = x.PublicId
             });
         }
+
+        public static bool IsSongCurrent(this SongQueueModel song)
+        {
+            return DateTime.UtcNow > song.StartTime && DateTime.UtcNow < song.EndTime;
+        }
     }
 }
