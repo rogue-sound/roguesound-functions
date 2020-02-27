@@ -16,12 +16,13 @@ namespace RogueSound.Functions
 {
     public static partial class RogueSoundFunctions
     {
-        [FunctionName("ClearQueue")]
-        public static async Task<IActionResult> ClearQueue(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = null)] HttpRequest req,
+        [FunctionName("SkipCurrentSong")]
+        public static async Task<IActionResult> SkipCurrentSong(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
             ILogger log)
         {
-            log.LogInformation("HttpTriger, clearing queue");
+            var data = JsonConvert.DeserializeObject<SkipSongRequestModel>(await req.ReadAsStringAsync());
+            log.LogInformation($"HttpTriger, skipping song in session {data.RoomSessionId})");
 
             var queryUri = UriFactory.CreateDocumentCollectionUri("RogueSound", "Sessions");
             var feedOptions = new FeedOptions { PartitionKey = new PartitionKey(0) };
@@ -34,7 +35,7 @@ namespace RogueSound.Functions
                 .Take(1)
                 .AsDocumentQuery();
 
-            var sessionsReturned = new List<RoomSessionModel>();
+            var sessionsReturned = new List<RoomSessionModel>();    
 
             while (currentSessionQuery.HasMoreResults) sessionsReturned.AddRange(await currentSessionQuery.ExecuteNextAsync<RoomSessionModel>());
 
@@ -42,19 +43,17 @@ namespace RogueSound.Functions
 
             log.LogInformation($"Returned {sessionsReturned.Count} sessions");
 
-            var songList = currentSession.Songs;
+            var songList = currentSession.Songs.ToList();
 
-            if (songList.Any())
+            if (songList.Where(x => x.StartTime < DateTime.Now).Any())
             {
-                currentSession.Songs = Enumerable.Empty<SongQueueModel>();
+                currentSession.Songs = songList.RemoveCurrent();
 
                 var uri = UriFactory.CreateDocumentUri("RogueSound", "Sessions", currentSession.id);
 
                 var partitionOptions = new RequestOptions { PartitionKey = new PartitionKey(0) };
 
-                await client.ReplaceDocumentAsync(uri, currentSession, partitionOptions); // Thanks javi, disflexia is a real condition
-
-                //Shut your dicktrap, Pablo
+                await client.ReplaceDocumentAsync(uri, currentSession, partitionOptions);
             }
 
             return new OkResult();

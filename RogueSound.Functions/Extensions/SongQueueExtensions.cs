@@ -26,6 +26,14 @@ namespace RogueSound.Functions
                 .FixQueueSongGapTimings(theOddOneOut);
         }
 
+        public static IEnumerable<SongQueueModel> RemoveCurrent(this IEnumerable<SongQueueModel> songQueue)
+        {
+            var playingSong = songQueue.Where(x => x.StartTime < DateTime.Now && x.EndTime > DateTime.UtcNow).FirstOrDefault();
+
+            return songQueue.Except(new List<SongQueueModel>() { playingSong })
+                .FixQueueSongGapTimings(playingSong);
+        }
+
         public static IEnumerable<SongQueueModel> FixQueueSongGapTimings(this IEnumerable<SongQueueModel> songQueue, SongQueueModel gappedSong)
         {
             var gapSpan = TimeSpan.FromMilliseconds(gappedSong.Duration);
@@ -42,7 +50,8 @@ namespace RogueSound.Functions
                 RoomId = x.RoomId,
                 SongId = x.SongId,
                 StartTime = x.StartTime.Subtract(gapSpan),
-                Title = x.Title
+                Title = x.Title,
+                PublicId = x.PublicId
             });
         }
     }
