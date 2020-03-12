@@ -3,6 +3,7 @@ using EzyPaging;
 using Microsoft.AspNetCore.Mvc;
 using RogueSound.Common.Constants;
 using RogueSound.Common.Models;
+using RogueSound.Common.Sorting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,9 +21,13 @@ namespace RogueSound.Lobby.Actions
             this.cosmyClient = cosmyClient;
         }
 
-        public async Task<IActionResult> ExecuteAsync(PageModel pageModel)
+        public async Task<IActionResult> ExecuteAsync(PageModel pageModel, SortModel sortModel)
         {
-            var roomsQuery = this.cosmyClient.CreateDocumentQuery<RoomModel>(RoomConstants.Collection, RoomConstants.RoomPartitionKey).Where(x => x.Private == false).AddPaging(pageModel);
+            var roomsQuery = this.cosmyClient.CreateDocumentQuery<RoomModel>(RoomConstants.Collection, RoomConstants.RoomPartitionKey)
+                .Where(x => x.Private == false)
+                .AddSort(sortModel)
+                .AddPaging(pageModel);
+
             var publicRooms = await roomsQuery.ExecuteQuery<RoomModel, RoomListResponseModel>();
 
             return new OkObjectResult(publicRooms);

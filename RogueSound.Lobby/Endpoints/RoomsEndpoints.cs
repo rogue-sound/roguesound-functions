@@ -6,6 +6,7 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using RogueSound.Common.Models;
+using RogueSound.Common.Sorting;
 using RogueSound.Lobby.Actions;
 using System;
 using System.Collections.Generic;
@@ -32,10 +33,11 @@ namespace RogueSound.Lobby.Endpoints
         [HttpTrigger(AuthorizationLevel.Function, "get", Route = "Rooms")] HttpRequest req, ILogger log)
         {
             var paging = req.ExtractPaging();
+            var sorting = req.ExtractSorting();
 
             log.LogInformation("Serving request querying all public rooms");
 
-            return await this.getRoomsAction.ExecuteAsync(paging);
+            return await this.getRoomsAction.ExecuteAsync(paging, sorting);
         }
 
         [FunctionName(nameof(GetUserRooms))]
@@ -64,9 +66,17 @@ namespace RogueSound.Lobby.Endpoints
         {
             log.LogInformation("Serving request: add a new room");
 
-            var reqBody = JsonConvert.DeserializeObject<RoomCreateModel>(await req.ReadAsStringAsync());
+            RoomCreateModel reqBody;
 
-            if (reqBody == null) return new BadRequestResult();
+            try
+            {
+                reqBody = JsonConvert.DeserializeObject<RoomCreateModel>(await req.ReadAsStringAsync());
+                if (reqBody == null) return new BadRequestObjectResult("Malformed request body");
+            }
+            catch(Exception e)
+            {
+                return new BadRequestObjectResult("Malformed request body");
+            }
 
             return await this.addRoomAction.ExecuteAsync(reqBody);
         }
