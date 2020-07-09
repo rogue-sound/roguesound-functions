@@ -47,7 +47,7 @@ namespace RogueSound.Functions
 
             if (songList.Where(x => x.StartTime < DateTime.Now).Any())
             {
-                currentSession.Songs = songList.RemoveCurrent();
+                currentSession.Songs = songList.SkipCurrent();
 
                 var uri = UriFactory.CreateDocumentUri("RogueSound", "Sessions", currentSession.id);
 

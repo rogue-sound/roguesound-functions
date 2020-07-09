@@ -30,8 +30,15 @@ namespace RogueSound.Functions
         {
             var currentSong = songQueue.Where(x => DateTime.UtcNow > x.StartTime && DateTime.UtcNow < x.EndTime).FirstOrDefault();
 
-            return songQueue.Except(new List<SongQueueModel>() { currentSong })
+           return songQueue.Except(new List<SongQueueModel>() { currentSong })
                 .FixQueueSongGapTimings(currentSong);
+        }
+
+        public static IEnumerable<SongQueueModel> SkipCurrent(this IEnumerable<SongQueueModel> songQueue)
+        {
+            var currentSong = songQueue.Where(x => DateTime.UtcNow > x.StartTime && DateTime.UtcNow < x.EndTime).FirstOrDefault();
+
+            return songQueue.FixQueueSongGapTimings(currentSong);
         }
 
         public static IEnumerable<SongQueueModel> FixQueueSongGapTimings(this IEnumerable<SongQueueModel> songQueue, SongQueueModel gappedSong)
@@ -39,26 +46,20 @@ namespace RogueSound.Functions
             var gapSpan = gappedSong.IsSongCurrent() ?
                 TimeSpan.FromMilliseconds(gappedSong.Duration).Subtract(DateTime.UtcNow - gappedSong.StartTime) : TimeSpan.FromMilliseconds(gappedSong.Duration);
 
-            return songQueue.Select(x => new SongQueueModel()
-            {
-                User = x.User,
-                AlbumImg = x.AlbumImg,
-                AlbumName = x.AlbumName,
-                Artist = x.Artist,
-                Duration = x.Duration,
-                EndTime = x.EndTime.Subtract(gapSpan),
-                RequestTime = x.RequestTime,
-                RoomId = x.RoomId,
-                SongId = x.SongId,
-                StartTime = x.StartTime.Subtract(gapSpan),
-                Title = x.Title,
-                PublicId = x.PublicId
-            });
+            songQueue.ToList()
+                .ForEach(x =>
+                {
+                    x.EndTime = x.EndTime.Subtract(gapSpan);
+                    x.StartTime = x.StartTime.Subtract(gapSpan);
+                });
+
+            return songQueue;
         }
 
         public static bool IsSongCurrent(this SongQueueModel song)
         {
-            return DateTime.UtcNow > song.StartTime && DateTime.UtcNow < song.EndTime;
+            var current = DateTime.UtcNow > song.StartTime && DateTime.UtcNow < song.EndTime;
+            return current;
         }
     }
 }
