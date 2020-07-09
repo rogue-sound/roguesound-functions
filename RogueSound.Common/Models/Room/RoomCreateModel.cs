@@ -15,6 +15,8 @@ namespace RogueSound.Common.Models
         public string Description { get; set; }
 
         public bool Private { get; set; }
+
+        public string Password { get; set; }
     }
 
     public static class RoomCreateModelExtensions
@@ -30,7 +32,8 @@ namespace RogueSound.Common.Models
                 Name = room.Name,
                 Description = room.Description,
                 Private = room.Private,
-                Region = RoomConstants.RoomPartitionKey
+                Password = room.Password,
+                Style = RoomConstants.RoomPartitionKey
             };
         }
     }

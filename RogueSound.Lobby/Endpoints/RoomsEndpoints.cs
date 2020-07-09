@@ -18,14 +18,12 @@ namespace RogueSound.Lobby.Endpoints
     public class RoomsEndpoints
     {
         private readonly GetRoomsAction getRoomsAction;
-        private readonly GetUserRoomsAction getUserRoomsAction;
         private readonly AddRoomAction addRoomAction;
 
-        public RoomsEndpoints(GetRoomsAction getRoomsAction, GetUserRoomsAction getUserRoomsAction, AddRoomAction addRoomAction)
+        public RoomsEndpoints(GetRoomsAction getRoomsAction, AddRoomAction addRoomAction)
         {
             this.getRoomsAction = getRoomsAction;
             this.addRoomAction = addRoomAction;
-            this.getUserRoomsAction = getUserRoomsAction;
         }
 
         [FunctionName(nameof(GetRooms))]
@@ -35,20 +33,9 @@ namespace RogueSound.Lobby.Endpoints
             var paging = req.ExtractPaging();
             var sorting = req.ExtractSorting();
 
-            log.LogInformation("Serving request querying all public rooms");
+            log.LogInformation("Serving request: GetRooms");
 
             return await this.getRoomsAction.ExecuteAsync(paging, sorting);
-        }
-
-        [FunctionName(nameof(GetUserRooms))]
-        public async Task<IActionResult> GetUserRooms(
-        [HttpTrigger(AuthorizationLevel.Function, "get", Route = "Rooms/UserRooms")] HttpRequest req, ILogger log)
-        {
-            log.LogInformation("Serving request for all user  rooms");
-
-            var paging = req.ExtractPaging();
-
-            return await this.getUserRoomsAction.ExecuteAsync(paging);
         }
 
         [FunctionName(nameof(GetRoomDetails))]

@@ -7,6 +7,6 @@ namespace RogueSound.Common.Constants
     public static class RoomConstants
     {
         public const string Collection = "Rooms";
-        public const string RoomPartitionKey = "Region";
+        public const string RoomPartitionKey = "RandomParty";
     }
 }

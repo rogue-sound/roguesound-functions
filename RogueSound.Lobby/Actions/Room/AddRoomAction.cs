@@ -22,7 +22,7 @@ namespace RogueSound.Lobby.Actions
         public async Task<IActionResult> ExecuteAsync(RoomCreateModel roomCreateModel)
         {
             var model = roomCreateModel.ToRoomModel();
-            var result = await this.cosmyClient.CreateDocumentAsync(RoomConstants.Collection, model, model.Region);
+            var result = await this.cosmyClient.CreateDocumentAsync(RoomConstants.Collection, model, model.Style);
 
             return (result != Guid.Empty)
                 ? (IActionResult)new OkObjectResult(result)

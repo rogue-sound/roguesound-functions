@@ -24,7 +24,6 @@ namespace RogueSound.Lobby.Actions
         public async Task<IActionResult> ExecuteAsync(PageModel pageModel, SortModel sortModel)
         {
             var roomsQuery = this.cosmyClient.CreateDocumentQuery<RoomModel>(RoomConstants.Collection, RoomConstants.RoomPartitionKey)
-                .Where(x => x.Private == false)
                 .AddSort(sortModel)
                 .AddPaging(pageModel);
 

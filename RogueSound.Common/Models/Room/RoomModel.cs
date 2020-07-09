@@ -21,12 +21,14 @@ namespace RogueSound.Common.Models
 
         public bool Private { get; set; }
 
+        public string Password { get; set; }
+
         public string Logo { get; set; }
 
         public string Cover { get; set; }
 
         public SessionConfiguration DefaultConfig { get; set; }
 
-        public string Region { get; set; } = RoomConstants.RoomPartitionKey;
+        public string Style { get; set; } = RoomConstants.RoomPartitionKey;
     }
 }
