@@ -58,8 +58,7 @@ namespace RogueSound.Functions
 
         public static bool IsSongCurrent(this SongQueueModel song)
         {
-            var current = DateTime.UtcNow > song.StartTime && DateTime.UtcNow < song.EndTime;
-            return current;
+            return DateTime.UtcNow > song.StartTime && DateTime.UtcNow < song.EndTime;
         }
     }
 }
