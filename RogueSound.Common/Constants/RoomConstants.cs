@@ -8,5 +8,7 @@ namespace RogueSound.Common.Constants
     {
         public const string Collection = "Rooms";
         public const string RoomPartitionKey = "RandomParty";
+
+        public static string[] RoomStyles = { "Random", "Party", "Duh" };
     }
 }
