@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace RogueSound.Common.Sorting
+﻿namespace RogueSound.Common.Sorting
 {
     public class SortModel
     {

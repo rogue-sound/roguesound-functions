@@ -1,11 +1,8 @@
 ﻿using Cosmy;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.Documents.Client;
 using RogueSound.Common.Constants;
 using RogueSound.Common.Models;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace RogueSound.Lobby.Actions
