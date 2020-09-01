@@ -19,7 +19,7 @@ namespace RogueSound.Functions
 
         public static IEnumerable<SongQueueModel> RemoveUnplayed(this IEnumerable<SongQueueModel> songQueue, string songId)
         {
-            var theOddOneOut = songQueue.Where(x => x.SongId == songId && x.StartTime > DateTime.UtcNow)
+            var theOddOneOut = songQueue.Where(x => x.PublicId == Guid.Parse(songId) && x.StartTime > DateTime.UtcNow)
                 .OrderBy(x => x.StartTime).FirstOrDefault();
 
             return songQueue.Except(new List<SongQueueModel>() { theOddOneOut })
@@ -44,9 +44,10 @@ namespace RogueSound.Functions
         public static IEnumerable<SongQueueModel> FixQueueSongGapTimings(this IEnumerable<SongQueueModel> songQueue, SongQueueModel gappedSong)
         {
             var gapSpan = gappedSong.IsSongCurrent() ?
-                TimeSpan.FromMilliseconds(gappedSong.Duration).Subtract(DateTime.UtcNow - gappedSong.StartTime) : TimeSpan.FromMilliseconds(gappedSong.Duration);
+                TimeSpan.FromMilliseconds(gappedSong.Duration).Subtract(DateTime.UtcNow - gappedSong.EndTime) : 
+                TimeSpan.FromMilliseconds(gappedSong.Duration);
 
-            songQueue.ToList()
+            songQueue.Where(x => x.StartTime > gappedSong.StartTime).ToList()
                 .ForEach(x =>
                 {
                     x.EndTime = x.EndTime.Subtract(gapSpan);
