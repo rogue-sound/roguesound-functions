@@ -7,9 +7,7 @@ namespace RogueSound.Common.Models
 {
     public class RoomModel
     {
-        public string id { get; set; }
-
-        public Guid PublicId { get; set; }
+        public string Id { get; set; }
 
         public DateTime CreatedAt { get; set; }
 

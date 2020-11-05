@@ -25,8 +25,7 @@ namespace RogueSound.Common.Models
         {
             return new RoomModel
             {
-                id = Guid.NewGuid().ToString(),
-                PublicId = Guid.NewGuid(),
+                Id = Guid.NewGuid().ToString(),
                 CreatedAt = DateTime.UtcNow,
                 Creator = room.Creator,
                 Name = room.Name,

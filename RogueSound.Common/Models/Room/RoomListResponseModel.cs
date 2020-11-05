@@ -6,7 +6,7 @@ namespace RogueSound.Common.Models
 {
     public class RoomListResponseModel
     {
-        public Guid PublicId { get; set; }
+        public string Id { get; set; }
 
         public string Creator { get; set; }
 
@@ -14,6 +14,6 @@ namespace RogueSound.Common.Models
 
         public string Description { get; set; }
 
-        public bool Private { get; set; }
+        public string Style { get; set; }
     }
 }
