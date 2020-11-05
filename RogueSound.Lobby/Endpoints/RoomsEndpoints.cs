@@ -29,19 +29,19 @@ namespace RogueSound.Lobby.Endpoints
 
         [FunctionName(nameof(GetRooms))]
         public async Task<IActionResult> GetRooms(
-        [HttpTrigger(AuthorizationLevel.Function, "get", Route = "Rooms")] HttpRequest req, ILogger log)
+        [HttpTrigger(AuthorizationLevel.Function, "get", Route = "Rooms/{style}")] HttpRequest req, int style, ILogger log)
         {
             var paging = req.ExtractPaging();
             var sorting = req.ExtractSorting();
 
             log.LogInformation("Serving request: GetRooms");
 
-            return await this.getRoomsAction.ExecuteAsync(paging, sorting);
+            return await this.getRoomsAction.ExecuteAsync(style, paging, sorting);
         }
 
         [FunctionName(nameof(GetRoomDetails))]
         public async Task<IActionResult> GetRoomDetails(
-        [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = "Rooms/{roomId}")] HttpRequest req, ILogger log)
+        [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = "Rooms/Details/{roomId}")] HttpRequest req, ILogger log)
         {
             log.LogInformation("Serving request: GetRoomDetails");
 

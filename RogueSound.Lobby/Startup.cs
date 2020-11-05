@@ -23,7 +23,6 @@ namespace RogueSound.Lobby
             });
 
             services.AddScoped(typeof(GetRoomsAction));
-            services.AddScoped(typeof(GetUserRoomsAction));
             services.AddScoped(typeof(DeleteRoomAction));
             services.AddScoped(typeof(AddRoomAction));
         }

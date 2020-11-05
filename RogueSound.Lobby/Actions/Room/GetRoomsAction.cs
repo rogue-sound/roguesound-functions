@@ -21,9 +21,9 @@ namespace RogueSound.Lobby.Actions
             this.cosmyClient = cosmyClient;
         }
 
-        public async Task<IActionResult> ExecuteAsync(PageModel pageModel, SortModel sortModel)
+        public async Task<IActionResult> ExecuteAsync(int style, PageModel pageModel, SortModel sortModel)
         {
-            var roomsQuery = this.cosmyClient.CreateDocumentQuery<RoomModel>(RoomConstants.Collection, RoomConstants.RoomPartitionKey)
+            var roomsQuery = this.cosmyClient.CreateDocumentQuery<RoomModel>(RoomConstants.Collection, style)
                 .AddSort(sortModel)
                 .AddPaging(pageModel);
 
