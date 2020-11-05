@@ -14,6 +14,6 @@ namespace RogueSound.Common.Models
 
         public string Description { get; set; }
 
-        public string Style { get; set; }
+        public int Style { get; set; }
     }
 }

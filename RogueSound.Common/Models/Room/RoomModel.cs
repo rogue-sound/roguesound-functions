@@ -27,6 +27,6 @@ namespace RogueSound.Common.Models
 
         public SessionConfiguration DefaultConfig { get; set; }
 
-        public string Style { get; set; } = RoomConstants.RoomPartitionKey;
+        public int Style { get; set; } = 1;
     }
 }

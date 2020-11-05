@@ -32,7 +32,7 @@ namespace RogueSound.Common.Models
                 Description = room.Description,
                 Private = room.Private,
                 Password = room.Password,
-                Style = RoomConstants.RoomPartitionKey
+                Style = 1
             };
         }
     }
