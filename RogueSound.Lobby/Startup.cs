@@ -18,8 +18,8 @@ namespace RogueSound.Lobby
             services.AddCosmyClient(new Cosmy.Config.CosmyConfiguration
             {
                 Database = "RogueSound",
-                Endpoint = "https://rogue-sound-prv.documents.azure.com:443",
-                Key = "961YzslZTw5k4EJgdrWCbghnyRhnfA8edKkg5dZLkUcz57nSnhvtr8RfEmnrlGmkrEAnEtozV4HpD6whc0PEtg=="
+                Endpoint = Environment.GetEnvironmentVariable("CosmosEndpoint"),
+                Key = Environment.GetEnvironmentVariable("CosmosKey")
             });
 
             services.AddScoped(typeof(GetRoomsAction));
