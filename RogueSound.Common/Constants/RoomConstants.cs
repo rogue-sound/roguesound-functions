@@ -1,7 +1,4 @@
 ﻿using RogueSound.Common.Models.Room;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace RogueSound.Common.Constants
 {
@@ -10,6 +7,6 @@ namespace RogueSound.Common.Constants
         public const string Collection = "Rooms";
         public const string RoomPartitionKey = "RandomParty";
 
-        public static RoomStyle[] RoomStyles = { new RoomStyle { Id = 1, Name = "RandomParty"} };
+        public static RoomStyle[] RoomStyles = { new RoomStyle { Id = 1, Name = "RandomParty"}, new RoomStyle { Id = 2, Name = "Rock" } };
     }
 }

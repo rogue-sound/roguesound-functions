@@ -1,7 +1,4 @@
-﻿using RogueSound.Common.Constants;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
 
 namespace RogueSound.Common.Models
 {
@@ -11,7 +8,7 @@ namespace RogueSound.Common.Models
 
         public DateTime CreatedAt { get; set; }
 
-        public string Creator { get; set; }
+        public RoomUserModel User { get; set; }
 
         public string Name { get; set; }
 

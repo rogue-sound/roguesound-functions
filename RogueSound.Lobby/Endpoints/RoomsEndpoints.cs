@@ -29,19 +29,24 @@ namespace RogueSound.Lobby.Endpoints
 
         [FunctionName(nameof(GetRooms))]
         public async Task<IActionResult> GetRooms(
-        [HttpTrigger(AuthorizationLevel.Function, "get", Route = "Rooms/{style}")] HttpRequest req, int style, ILogger log)
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Rooms")] HttpRequest req, ILogger log)
         {
             var paging = req.ExtractPaging();
             var sorting = req.ExtractSorting();
 
+            var styleValue = req.Query["style"];
+            int.TryParse((string)styleValue, out int style);
+
+            var searchName = (string)req.Query["name"];
+
             log.LogInformation("Serving request: GetRooms");
 
-            return await this.getRoomsAction.ExecuteAsync(style, paging, sorting);
+            return await this.getRoomsAction.ExecuteAsync(style, searchName ,paging, sorting);
         }
 
         [FunctionName(nameof(GetRoomDetails))]
         public async Task<IActionResult> GetRoomDetails(
-        [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = "Rooms/Details/{roomId}")] HttpRequest req, ILogger log)
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "Rooms/Details/{roomId}")] HttpRequest req, ILogger log)
         {
             log.LogInformation("Serving request: GetRoomDetails");
 
@@ -50,7 +55,7 @@ namespace RogueSound.Lobby.Endpoints
 
         [FunctionName(nameof(GetStyles))]
         public IActionResult GetStyles(
-        [HttpTrigger(AuthorizationLevel.Function, "get", Route = "Rooms/Styles")] HttpRequest req, ILogger log)
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Rooms/Styles")] HttpRequest req, ILogger log)
         {
             log.LogInformation("Serving request: GetStyles");
 
@@ -59,7 +64,7 @@ namespace RogueSound.Lobby.Endpoints
 
         [FunctionName(nameof(AddRoom))]
         public async Task<IActionResult> AddRoom(
-        [HttpTrigger(AuthorizationLevel.Function, "post", Route = "Rooms")] HttpRequest req, ILogger log)
+        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Rooms")] HttpRequest req, ILogger log)
         {
             log.LogInformation("Serving request: add a new room");
 
