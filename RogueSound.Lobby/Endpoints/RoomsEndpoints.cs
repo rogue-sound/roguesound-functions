@@ -47,7 +47,7 @@ namespace RogueSound.Lobby.Endpoints
 
         [FunctionName(nameof(GetRoomDetails))]
         public async Task<IActionResult> GetRoomDetails(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "Rooms/Details/{roomId}")] HttpRequest req, string roomId, ILogger log)
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "Rooms/{roomId}")] HttpRequest req, string roomId, ILogger log)
         {
             log.LogInformation("Serving request: GetRoomDetails");
 
