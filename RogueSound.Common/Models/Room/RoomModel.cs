@@ -18,7 +18,7 @@ namespace RogueSound.Common.Models
 
         public string Password { get; set; }
 
-        public string Logo { get; set; }
+        public string Img { get; set; }
 
         public string Cover { get; set; }
 

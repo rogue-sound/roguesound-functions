@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RogueSound.Common.Models.Room;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -14,6 +15,6 @@ namespace RogueSound.Common.Models
 
         public string Img { get; set; }
 
-        public int Style { get; set; }
+        public RoomStyle Style { get; set; }
     }
 }

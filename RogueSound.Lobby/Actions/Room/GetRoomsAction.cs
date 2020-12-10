@@ -42,11 +42,19 @@ namespace RogueSound.Lobby.Actions
                     .AsDocumentQuery();
 
 
-            var result = new List<RoomListResponseModel>();
+            var result = new List<RoomModel>();
 
-            while (docQuery.HasMoreResults) result.AddRange(await docQuery.ExecuteNextAsync<RoomListResponseModel>());
+            while (docQuery.HasMoreResults) result.AddRange(await docQuery.ExecuteNextAsync<RoomModel>());
 
-            return new OkObjectResult(result);
+
+            return new OkObjectResult(result.Select(x => new RoomListResponseModel
+            {
+                Id = x.Id,
+                Img = x.Img,
+                Name = x.Name,
+                User = x.User,
+                Style = RoomConstants.RoomStyles.FirstOrDefault(y => y.Id == x.Style)
+            }));
           
         }
     }
