@@ -3,8 +3,6 @@ using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using RogueSound.Lobby.Actions;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 [assembly: FunctionsStartup(typeof(RogueSound.Lobby.Startup))]
 namespace RogueSound.Lobby
@@ -23,6 +21,7 @@ namespace RogueSound.Lobby
             });
 
             services.AddScoped(typeof(GetRoomsAction));
+            services.AddScoped(typeof(GetRoomAction));
             services.AddScoped(typeof(DeleteRoomAction));
             services.AddScoped(typeof(AddRoomAction));
         }

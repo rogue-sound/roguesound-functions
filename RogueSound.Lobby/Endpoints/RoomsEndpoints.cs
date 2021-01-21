@@ -49,7 +49,7 @@ namespace RogueSound.Lobby.Endpoints
 
         [FunctionName(nameof(GetRoomDetails))]
         public async Task<IActionResult> GetRoomDetails(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "Rooms/{roomId}")] HttpRequest req, string roomId, ILogger log)
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Rooms/{roomId}")] HttpRequest req, string roomId, ILogger log)
         {
             log.LogInformation("Serving request: GetRoomDetails");
 
@@ -58,7 +58,7 @@ namespace RogueSound.Lobby.Endpoints
 
         [FunctionName(nameof(GetStyles))]
         public IActionResult GetStyles(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Rooms/Styles")] HttpRequest req, ILogger log)
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Styles")] HttpRequest req, ILogger log)
         {
             log.LogInformation("Serving request: GetStyles");
 
