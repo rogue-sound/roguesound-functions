@@ -48,12 +48,22 @@ namespace RogueSound.Functions
 
         [FunctionName("GetCurrent")]
         public static async Task<IActionResult> GetSong(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "GetCurrent/{roomString}")] HttpRequest req, string roomString,
             ILogger log)
         {
+            var guidLenght = Guid.Empty.ToString().Length;
+
+            var roomIdString = roomString.Substring(0, guidLenght);
+            var styleString = roomString.Substring(guidLenght);
+
+            var roomIdParseResult = Guid.TryParse(roomIdString, out var roomId);
+            var styleParseResult = int.TryParse(styleString, out var style);
+
+            if (!roomIdParseResult || !styleParseResult) return new BadRequestObjectResult("Invalid room identifier received");
+
             var queryUri = UriFactory.CreateDocumentCollectionUri("RogueSound", "Sessions");
-            var feedOptions = new FeedOptions { PartitionKey = new PartitionKey(0) };
-            var partitionOptions = new RequestOptions { PartitionKey = new PartitionKey(0) };
+            var feedOptions = new FeedOptions { PartitionKey = new PartitionKey(styleString) };
+            var partitionOptions = new RequestOptions { PartitionKey = new PartitionKey(styleString) };
 
             var todayDate = DateTime.SpecifyKind(DateTime.Today, DateTimeKind.Utc);
 
@@ -80,7 +90,7 @@ namespace RogueSound.Functions
                 currentSession = new RoomSessionModel
                 {
                     id = Guid.NewGuid().ToString(),
-                    RoomId = 0,
+                    RoomId = roomId.ToString(),
                     SessionDate = todayDate,
                     Songs = Enumerable.Empty<SongQueueModel>()
                 };

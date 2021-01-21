@@ -16,15 +16,24 @@ namespace RogueSound.Functions
 {
     public static partial class RogueSoundFunctions
     {
+
         [FunctionName("ClearQueue")]
         public static async Task<IActionResult> ClearQueue(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "ClearQueue/{roomString}")] HttpRequest req, string roomString,
             ILogger log)
         {
             log.LogInformation("HttpTriger, clearing queue");
 
+            var guidLenght = Guid.Empty.ToString().Length;
+
+            var roomIdString = roomString.Substring(0, guidLenght);
+            var styleString = roomString.Substring(guidLenght);
+
+            var roomIdParseResult = Guid.TryParse(roomIdString, out var roomId);
+            var styleParseResult = int.TryParse(styleString, out var style);
+
             var queryUri = UriFactory.CreateDocumentCollectionUri("RogueSound", "Sessions");
-            var feedOptions = new FeedOptions { PartitionKey = new PartitionKey(0) };
+            var feedOptions = new FeedOptions { PartitionKey = new PartitionKey(styleString) };
 
             var todayDate = DateTime.SpecifyKind(DateTime.Today, DateTimeKind.Utc);
 
@@ -50,7 +59,7 @@ namespace RogueSound.Functions
 
                 var uri = UriFactory.CreateDocumentUri("RogueSound", "Sessions", currentSession.id);
 
-                var partitionOptions = new RequestOptions { PartitionKey = new PartitionKey(0) };
+                var partitionOptions = new RequestOptions { PartitionKey = new PartitionKey(styleString) };
 
                 await client.ReplaceDocumentAsync(uri, currentSession, partitionOptions); // Thanks javi, disflexia is a real condition
 

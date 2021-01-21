@@ -9,7 +9,7 @@ namespace RogueSound.Functions
     {
         public string id { get; set; }
             
-        public int RoomId { get; set; } = 0;
+        public string RoomId { get; set; } = "0";
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
@@ -20,7 +20,7 @@ namespace RogueSound.Functions
 
     public class RoomSessionResponseModel
     {
-        public int RoomId { get; set; } = 0;
+        public string RoomId { get; set; } = "0";
 
         public DateTime SessionDate { get; set; }
 

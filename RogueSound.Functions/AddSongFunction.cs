@@ -17,6 +17,7 @@ namespace RogueSound.Functions
 {
     public partial class RogueSoundFunctions
     {
+
         [FunctionName("AddSong")]
         public static async Task<IActionResult> AddSong(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
@@ -24,12 +25,12 @@ namespace RogueSound.Functions
         {
             log.LogInformation("HttpTriger, adding new song");
 
-            var data = JsonConvert.DeserializeObject<AddSongRequestModel>(await req.ReadAsStringAsync());
+            var songReq = JsonConvert.DeserializeObject<AddSongRequestModel>(await req.ReadAsStringAsync());
 
-            if (string.IsNullOrEmpty(data.User)) return new BadRequestObjectResult("Request made from an unlogged client");
+            if (string.IsNullOrEmpty(songReq.User)) return new BadRequestObjectResult("Request made from an unlogged client");
 
             var queryUri = UriFactory.CreateDocumentCollectionUri("RogueSound", "Sessions");
-            var feedOptions = new FeedOptions { PartitionKey = new PartitionKey(0) };
+            var feedOptions = new FeedOptions { PartitionKey = new PartitionKey(songReq.RoomStyle) };
 
             var todayDate = DateTime.SpecifyKind(DateTime.Today, DateTimeKind.Utc);
 
@@ -60,17 +61,17 @@ namespace RogueSound.Functions
                 songList.Insert(0, new SongQueueModel()
                 {
                     PublicId = Guid.NewGuid(),
-                    User = data.User ?? "anonymous",
-                    SongId = data.SongId,
-                    Artist = data.Artist,
-                    AlbumName = data.AlbumName,
-                    AlbumImg = data.AlbumImg,
-                    RoomId = 0,
-                    Title = data.Title,
+                    User = songReq.User ?? "anonymous",
+                    SongId = songReq.SongId,
+                    Artist = songReq.Artist,
+                    AlbumName = songReq.AlbumName,
+                    AlbumImg = songReq.AlbumImg,
+                    RoomId = songReq.RoomId,
+                    Title = songReq.Title,
                     RequestTime = DateTime.UtcNow,
-                    Duration = data.Duration,
+                    Duration = songReq.Duration,
                     StartTime = DateTime.UtcNow.AddSeconds(1),
-                    EndTime = DateTime.UtcNow.AddMilliseconds(data.Duration)
+                    EndTime = DateTime.UtcNow.AddMilliseconds(songReq.Duration)
                 });
             }
             else
@@ -78,17 +79,17 @@ namespace RogueSound.Functions
                 songList.Insert(0, new SongQueueModel()
                 {
                     PublicId = Guid.NewGuid(),
-                    User = data.User ?? "anonymous",
-                    SongId = data.SongId,
-                    Artist = data.Artist,
-                    AlbumName = data.AlbumName,
-                    AlbumImg = data.AlbumImg,
-                    RoomId = 0,
-                    Title = data.Title,
+                    User = songReq.User ?? "anonymous",
+                    SongId = songReq.SongId,
+                    Artist = songReq.Artist,
+                    AlbumName = songReq.AlbumName,
+                    AlbumImg = songReq.AlbumImg,
+                    RoomId = songReq.RoomId,
+                    Title = songReq.Title,
                     RequestTime = DateTime.UtcNow,
-                    Duration = data.Duration,
+                    Duration = songReq.Duration,
                     StartTime = songList.FirstOrDefault().EndTime.AddSeconds(1),
-                    EndTime = songList.FirstOrDefault().EndTime.AddMilliseconds(data.Duration)
+                    EndTime = songList.FirstOrDefault().EndTime.AddMilliseconds(songReq.Duration)
                 });
             }
 
@@ -96,7 +97,7 @@ namespace RogueSound.Functions
 
             var updateUri = UriFactory.CreateDocumentUri("RogueSound", "Sessions", currentSession.id);
 
-            var partitionOptions = new RequestOptions { PartitionKey = new PartitionKey(0) };
+            var partitionOptions = new RequestOptions { PartitionKey = new PartitionKey(songReq.RoomStyle) };
 
             await client.ReplaceDocumentAsync(updateUri, currentSession, partitionOptions);
 

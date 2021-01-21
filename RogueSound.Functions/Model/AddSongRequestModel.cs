@@ -6,6 +6,10 @@ namespace RogueSound.Functions
 {
     public class AddSongRequestModel
     {
+        public string RoomStyle { get; set; }
+
+        public string RoomId { get; set; }
+
         public string SongId { get; set; }
 
         public int Duration { get; set; }

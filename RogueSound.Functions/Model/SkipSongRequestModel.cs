@@ -6,6 +6,10 @@ namespace RogueSound.Functions
 {
     public class SkipSongRequestModel
     {
+        public string RoomStyle { get; set; }
+
+        public string RoomId { get; set; }
+
         public string RoomSessionId { get; set; }
     }
 }

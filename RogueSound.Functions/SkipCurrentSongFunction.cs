@@ -21,11 +21,11 @@ namespace RogueSound.Functions
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
             ILogger log)
         {
-            var data = JsonConvert.DeserializeObject<SkipSongRequestModel>(await req.ReadAsStringAsync());
-            log.LogInformation($"HttpTriger, skipping song in session {data?.RoomSessionId})");
+            var skipReq = JsonConvert.DeserializeObject<SkipSongRequestModel>(await req.ReadAsStringAsync());
+            log.LogInformation($"HttpTriger, skipping song in session {skipReq?.RoomSessionId})");
 
             var queryUri = UriFactory.CreateDocumentCollectionUri("RogueSound", "Sessions");
-            var feedOptions = new FeedOptions { PartitionKey = new PartitionKey(0) };
+            var feedOptions = new FeedOptions { PartitionKey = new PartitionKey(skipReq.RoomStyle) };
 
             var todayDate = DateTime.SpecifyKind(DateTime.Today, DateTimeKind.Utc);
 
@@ -51,7 +51,7 @@ namespace RogueSound.Functions
 
                 var uri = UriFactory.CreateDocumentUri("RogueSound", "Sessions", currentSession.id);
 
-                var partitionOptions = new RequestOptions { PartitionKey = new PartitionKey(0) };
+                var partitionOptions = new RequestOptions { PartitionKey = new PartitionKey(skipReq.RoomStyle) };
 
                 await client.ReplaceDocumentAsync(uri, currentSession, partitionOptions);
             }

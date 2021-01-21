@@ -6,7 +6,7 @@ namespace RogueSound.Functions
     {
         public Guid PublicId { get; set; }
 
-        public int RoomId { get; set; }
+        public string RoomId { get; set; }
 
         public string User { get; set; }
 
