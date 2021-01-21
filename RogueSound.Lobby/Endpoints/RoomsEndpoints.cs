@@ -22,10 +22,12 @@ namespace RogueSound.Lobby.Endpoints
         private readonly AddRoomAction addRoomAction;
         private readonly GetRoomAction getRoomAction;
 
-        public RoomsEndpoints(GetRoomsAction getRoomsAction, AddRoomAction addRoomAction)
+        public RoomsEndpoints(GetRoomsAction getRoomsAction, AddRoomAction addRoomAction,
+            GetRoomAction getRoomAction)
         {
             this.getRoomsAction = getRoomsAction;
             this.addRoomAction = addRoomAction;
+            this.getRoomAction = getRoomAction;
         }
 
         [FunctionName(nameof(GetRooms))]
