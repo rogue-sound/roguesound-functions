@@ -33,7 +33,7 @@ namespace RogueSound.Functions
             var styleParseResult = int.TryParse(styleString, out var style);
 
             var queryUri = UriFactory.CreateDocumentCollectionUri("RogueSound", "Sessions");
-            var feedOptions = new FeedOptions { PartitionKey = new PartitionKey(styleString) };
+            var feedOptions = new FeedOptions { PartitionKey = new PartitionKey(roomIdString) };
 
             var todayDate = DateTime.SpecifyKind(DateTime.Today, DateTimeKind.Utc);
 
@@ -59,7 +59,7 @@ namespace RogueSound.Functions
 
                 var uri = UriFactory.CreateDocumentUri("RogueSound", "Sessions", currentSession.id);
 
-                var partitionOptions = new RequestOptions { PartitionKey = new PartitionKey(styleString) };
+                var partitionOptions = new RequestOptions { PartitionKey = new PartitionKey(roomIdString) };
 
                 await client.ReplaceDocumentAsync(uri, currentSession, partitionOptions); // Thanks javi, disflexia is a real condition
 

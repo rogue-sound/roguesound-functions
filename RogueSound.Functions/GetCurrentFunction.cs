@@ -62,8 +62,8 @@ namespace RogueSound.Functions
             if (!roomIdParseResult || !styleParseResult) return new BadRequestObjectResult("Invalid room identifier received");
 
             var queryUri = UriFactory.CreateDocumentCollectionUri("RogueSound", "Sessions");
-            var feedOptions = new FeedOptions { PartitionKey = new PartitionKey(styleString) };
-            var partitionOptions = new RequestOptions { PartitionKey = new PartitionKey(styleString) };
+            var feedOptions = new FeedOptions { PartitionKey = new PartitionKey(roomIdString) };
+            var partitionOptions = new RequestOptions { PartitionKey = new PartitionKey(roomIdString) };
 
             var todayDate = DateTime.SpecifyKind(DateTime.Today, DateTimeKind.Utc);
 

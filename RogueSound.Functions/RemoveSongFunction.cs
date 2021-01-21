@@ -26,7 +26,7 @@ namespace RogueSound.Functions
             var removeReq = JsonConvert.DeserializeObject<RemoveSongRequestModel>(await req.ReadAsStringAsync());
 
             var queryUri = UriFactory.CreateDocumentCollectionUri("RogueSound", "Sessions");
-            var feedOptions = new FeedOptions { PartitionKey = new PartitionKey(removeReq.RoomStyle) };
+            var feedOptions = new FeedOptions { PartitionKey = new PartitionKey(removeReq.RoomId) };
 
             var todayDate = DateTime.SpecifyKind(DateTime.Today, DateTimeKind.Utc);
 
@@ -52,7 +52,7 @@ namespace RogueSound.Functions
 
                 var uri = UriFactory.CreateDocumentUri("RogueSound", "Sessions", currentSession.id);
 
-                var partitionOptions = new RequestOptions { PartitionKey = new PartitionKey(removeReq.RoomStyle) };
+                var partitionOptions = new RequestOptions { PartitionKey = new PartitionKey(removeReq.RoomId) };
 
                 await client.ReplaceDocumentAsync(uri, currentSession, partitionOptions);
             }

@@ -30,7 +30,7 @@ namespace RogueSound.Functions
             if (string.IsNullOrEmpty(songReq.User)) return new BadRequestObjectResult("Request made from an unlogged client");
 
             var queryUri = UriFactory.CreateDocumentCollectionUri("RogueSound", "Sessions");
-            var feedOptions = new FeedOptions { PartitionKey = new PartitionKey(songReq.RoomStyle) };
+            var feedOptions = new FeedOptions { PartitionKey = new PartitionKey(songReq.RoomId) };
 
             var todayDate = DateTime.SpecifyKind(DateTime.Today, DateTimeKind.Utc);
 
@@ -97,7 +97,7 @@ namespace RogueSound.Functions
 
             var updateUri = UriFactory.CreateDocumentUri("RogueSound", "Sessions", currentSession.id);
 
-            var partitionOptions = new RequestOptions { PartitionKey = new PartitionKey(songReq.RoomStyle) };
+            var partitionOptions = new RequestOptions { PartitionKey = new PartitionKey(songReq.RoomId) };
 
             await client.ReplaceDocumentAsync(updateUri, currentSession, partitionOptions);
 
