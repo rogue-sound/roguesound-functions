@@ -30,7 +30,7 @@ namespace RogueSound.Functions
 
             var todayDate = DateTime.SpecifyKind(DateTime.Today, DateTimeKind.Utc);
 
-            var currentSessionQuery = client.CreateDocumentQuery<RoomSessionModel>(queryUri, feedOptions)
+            var currentSessionQuery = Client.CreateDocumentQuery<RoomSessionModel>(queryUri, feedOptions)
                 .Where(x => x.SessionDate == todayDate)
                 .OrderBy(x => x.CreatedAt)
                 .Take(1)
@@ -54,7 +54,7 @@ namespace RogueSound.Functions
 
                 var partitionOptions = new RequestOptions { PartitionKey = new PartitionKey(removeReq.RoomId) };
 
-                await client.ReplaceDocumentAsync(uri, currentSession, partitionOptions);
+                await Client.ReplaceDocumentAsync(uri, currentSession, partitionOptions);
             }
 
             return new OkResult();

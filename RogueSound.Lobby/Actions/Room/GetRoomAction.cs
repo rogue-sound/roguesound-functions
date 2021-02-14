@@ -41,7 +41,8 @@ namespace RogueSound.Lobby.Actions
                 User = doc.User,
                 Img = doc.Img,
                 Description = doc.Description,
-                Name = doc.Name
+                Name = doc.Name,
+                Style = doc.Style
             };
 
             return new OkObjectResult(result);

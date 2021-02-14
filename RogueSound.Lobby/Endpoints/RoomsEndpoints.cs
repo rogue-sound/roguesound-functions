@@ -9,9 +9,6 @@ using RogueSound.Common.Constants;
 using RogueSound.Common.Models;
 using RogueSound.Common.Sorting;
 using RogueSound.Lobby.Actions;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace RogueSound.Lobby.Endpoints
@@ -21,13 +18,15 @@ namespace RogueSound.Lobby.Endpoints
         private readonly GetRoomsAction getRoomsAction;
         private readonly AddRoomAction addRoomAction;
         private readonly GetRoomAction getRoomAction;
+        private readonly DeleteRoomAction deleteRoomAction;
 
         public RoomsEndpoints(GetRoomsAction getRoomsAction, AddRoomAction addRoomAction,
-            GetRoomAction getRoomAction)
+            GetRoomAction getRoomAction, DeleteRoomAction deleteRoomAction)
         {
             this.getRoomsAction = getRoomsAction;
             this.addRoomAction = addRoomAction;
             this.getRoomAction = getRoomAction;
+            this.deleteRoomAction = deleteRoomAction;
         }
 
         [FunctionName(nameof(GetRooms))]
@@ -83,6 +82,15 @@ namespace RogueSound.Lobby.Endpoints
             }
 
             return await this.addRoomAction.ExecuteAsync(reqBody);
+        }
+
+        [FunctionName(nameof(DeleteRoom))]
+        public async Task<IActionResult> DeleteRoom(
+        [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "Rooms/{roomId}")] HttpRequest req, string roomId, ILogger log)
+        {
+            log.LogInformation("Serving request: DeleteRoom");
+
+            return await this.getRoomAction.ExecuteAsync(roomId);
         }
     }
 }

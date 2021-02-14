@@ -17,5 +17,8 @@ namespace RogueSound.Common.Models
         public string Img { get; set; }
 
         public string Cover { get; set; }
+
+        public int Style { get; set; }
+
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace RogueSound.Functions
 {
@@ -29,5 +30,7 @@ namespace RogueSound.Functions
         public DateTime StartTime { get; set; }
 
         public DateTime EndTime { get; set; }
+
+        public IEnumerable<RetardInSessionResponseModel> RetardsInSession { get; set; }
     }
 }

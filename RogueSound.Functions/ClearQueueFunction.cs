@@ -37,7 +37,7 @@ namespace RogueSound.Functions
 
             var todayDate = DateTime.SpecifyKind(DateTime.Today, DateTimeKind.Utc);
 
-            var currentSessionQuery = client.CreateDocumentQuery<RoomSessionModel>(queryUri, feedOptions)
+            var currentSessionQuery = Client.CreateDocumentQuery<RoomSessionModel>(queryUri, feedOptions)
                 .Where(x => x.SessionDate == todayDate)
                 .OrderBy(x => x.CreatedAt)
                 .Take(1)
@@ -61,7 +61,7 @@ namespace RogueSound.Functions
 
                 var partitionOptions = new RequestOptions { PartitionKey = new PartitionKey(roomIdString) };
 
-                await client.ReplaceDocumentAsync(uri, currentSession, partitionOptions); // Thanks javi, disflexia is a real condition
+                await Client.ReplaceDocumentAsync(uri, currentSession, partitionOptions); // Thanks javi, disflexia is a real condition
 
                 //Shut your dicktrap, Pablo
             }

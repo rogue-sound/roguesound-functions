@@ -14,28 +14,34 @@ using Microsoft.Azure.Documents.Linq;
 using System.Net.Http;
 using Microsoft.Azure.Documents;
 using System.Collections.Generic;
+using Newtonsoft.Json.Serialization;
 
 namespace RogueSound.Functions
 {
     public static partial class RogueSoundFunctions
     {
-        private static IConfigurationRoot config = new ConfigurationBuilder()
+        private static readonly IConfigurationRoot Config = new ConfigurationBuilder()
         .SetBasePath(Environment.CurrentDirectory)
         .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
         .AddEnvironmentVariables()
         .Build();
 
-        private static DocumentClient client = GetCustomClient();
+
+
+        private static readonly DocumentClient Client = GetCustomClient();
         private static DocumentClient GetCustomClient()
         {
             DocumentClient customClient = new DocumentClient(
-                new Uri(config["CosmosEndpoint"]),
-                config["CosmosKey"],
+                new Uri(Config["CosmosEndpoint"]),
+                Config["CosmosKey"],
+                serializerSettings: new JsonSerializerSettings
+                {
+                    ContractResolver = new CamelCasePropertyNamesContractResolver()
+                },
                 new ConnectionPolicy
                 {
                     ConnectionMode = ConnectionMode.Direct,
                     ConnectionProtocol = Protocol.Tcp,
-                    // Customize retry options for Throttled requests
                     RetryOptions = new RetryOptions()
                     {
                         MaxRetryAttemptsOnThrottledRequests = 10,
@@ -69,14 +75,13 @@ namespace RogueSound.Functions
 
             log.LogInformation($"Querying session for {todayDate}");
 
-            var currentSessionQuery = client.CreateDocumentQuery<RoomSessionModel>(queryUri, feedOptions)
+            var currentSessionQuery = Client.CreateDocumentQuery<RoomSessionModel>(queryUri, feedOptions)
                 .Where(x => x.SessionDate == todayDate)
                 .OrderBy( x => x.CreatedAt)
                 .Take(1)
                 .AsDocumentQuery();
 
             var sessionsReturned = new List<RoomSessionModel>();
-
             while (currentSessionQuery.HasMoreResults) sessionsReturned.AddRange(await currentSessionQuery.ExecuteNextAsync<RoomSessionModel>());
 
             var currentSession = sessionsReturned.FirstOrDefault();
@@ -95,8 +100,28 @@ namespace RogueSound.Functions
                     Songs = Enumerable.Empty<SongQueueModel>()
                 };
 
-                await client.CreateDocumentAsync(queryUri, currentSession, partitionOptions);
+                await Client.CreateDocumentAsync(queryUri, currentSession, partitionOptions);
             }
+
+            var retardsUri = UriFactory.CreateDocumentCollectionUri("RogueSound", "Retards");
+            var retardsQuery = Client.CreateDocumentQuery<RetardInSessionModel>(retardsUri, feedOptions)
+                .Where(x => x.SessionId == currentSession.id)
+                .OrderBy(x => x.DisplayName)
+                .AsDocumentQuery();
+
+            var retardsReturned = new List<RetardInSessionResponseModel>();
+            while (retardsQuery.HasMoreResults) retardsReturned.AddRange(await retardsQuery.ExecuteNextAsync<RetardInSessionResponseModel>());
+
+            var mockUser = "AvrilTheQueen";
+
+            if (!retardsReturned.Any(x => x.DisplayName == mockUser))
+            {
+                var newRetard = new RetardInSessionModel(mockUser, null, currentSession.id, roomIdString);
+                await Client.CreateDocumentAsync(retardsUri, newRetard, partitionOptions);
+
+                retardsReturned.Add(new RetardInSessionResponseModel(mockUser, null));
+            }
+
 
             log.LogInformation($"Retrieved {currentSession.Songs.Count()} songs");
 
@@ -104,7 +129,5 @@ namespace RogueSound.Functions
 
             return new OkObjectResult(currentSession.ToResponseModel());
         }
-
-        
     }
 }
