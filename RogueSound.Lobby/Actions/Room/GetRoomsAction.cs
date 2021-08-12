@@ -36,16 +36,14 @@ namespace RogueSound.Lobby.Actions
 
             var filteredQuery = string.IsNullOrEmpty(searchName)
                 ? query
-                : query.Where(x => x.Name.Contains(searchName));
+                : query.Where(x => x.Name.Contains(searchName, StringComparison.OrdinalIgnoreCase));
 
             var docQuery = filteredQuery.AddPaging(pageModel)
-                    .AsDocumentQuery();
-
+                                        .AsDocumentQuery();
 
             var result = new List<RoomModel>();
 
             while (docQuery.HasMoreResults) result.AddRange(await docQuery.ExecuteNextAsync<RoomModel>());
-
 
             return new OkObjectResult(result.Select(x => new RoomListResponseModel
             {
